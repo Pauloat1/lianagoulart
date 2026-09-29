@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendário Acadêmico - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos para a Página de Calendário */
+    .calendar-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 1024px) {
+      .calendar-layout {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+
+    .calendar-card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-lg, 12px);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .calendar-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-color, #0f172a);
+    }
+
+    .btn-nav-cal {
+      background: #f1f5f9;
+      border: 1px solid var(--border-color, #cbd5e1);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-md, 8px);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-muted, #475569);
+      transition: var(--transition, all 0.2s);
+    }
+
+    .btn-nav-cal:hover {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+      border-color: var(--primary, #2563eb);
+    }
+
+    /* Grid do Calendário */
+    .weekdays-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-muted, #64748b);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+
+    .day-box {
+      aspect-ratio: 1 / 1;
+      min-height: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md, 8px);
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: #ffffff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-color, #1e293b);
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition, all 0.2s);
+    }
+
+    .day-box:hover {
+      background: #f8fafc;
+      border-color: var(--primary-light, #3b82f6);
+    }
+
+    .day-box.empty {
+      background: transparent;
+      border-color: transparent;
+      cursor: default;
+    }
+
+    .day-box.today {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+      border-color: var(--primary, #2563eb);
+    }
+
+    .day-box.has-event::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      width: 6px;
+      height: 6px;
+      background: #f59e0b;
+      border-radius: 50%;
+    }
+
+    .day-box.has-exam::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      width: 6px;
+      height: 6px;
+      background: #ef4444;
+      border-radius: 50%;
+    }
+
+    .day-box.today.has-event::after,
+    .day-box.today.has-exam::after {
+      background: #ffffff;
+    }
+
+    /* Legenda */
+    .calendar-legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color, #e2e8f0);
+      font-size: 0.85rem;
+      color: var(--text-muted, #64748b);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.today { background: #2563eb; }
+    .dot.exam { background: #ef4444; }
+    .dot.event { background: #f59e0b; }
+
+    /* Lista Lateral de Eventos */
+    .events-card h3 {
+      font-size: 1.15rem;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color, #e2e8f0);
+    }
+
+    .events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .event-item {
+      display: flex;
+      gap: 1rem;
+      padding: 0.75rem;
+      border-radius: var(--radius-md, 8px);
+      border: 1px solid var(--border-color, #e2e8f0);
+      background: #ffffff;
+      transition: var(--transition, all 0.2s);
+    }
+
+    .event-item:hover {
+      border-color: var(--primary-light, #3b82f6);
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    }
+
+    .event-date-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      border-radius: 6px;
+      min-width: 52px;
+      padding: 0.5rem;
+      color: var(--primary, #2563eb);
+    }
+
+    .event-date-badge .day { font-size: 1.25rem; font-weight: 800; line-height: 1; }
+    .event-date-badge .month { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-top: 0.2rem; }
+
+    .event-info h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--text-color, #0f172a); }
+    .event-info p { font-size: 0.8rem; color: var(--text-muted, #64748b); line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html">Hub Central</a>
+        <a href="boletim.html">Desempenho Acadêmico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="calendarios.html" class="active">Calendário Acadêmico</a>
+        <a href="horarios.html">Grade de Horários</a>
+        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Calendário Acadêmico</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <!-- Layout do Calendário + Painel de Eventos -->
+      <div class="calendar-layout">
+        
+        <!-- Coluna Esquerda: Calendário do Mês -->
+        <div class="calendar-card">
+          <div class="calendar-header">
+            <button class="btn-nav-cal">&lt; Anterior</button>
+            <h3>Outubro 2026</h3>
+            <button class="btn-nav-cal">Próximo &gt;</button>
+          </div>
+
+          <!-- Cabeçalho dos Dias da Semana -->
+          <div class="weekdays-grid">
+            <div>Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+          </div>
+
+          <!-- Matriz de Dias (Outubro 2026 começa na Quinta-feira) -->
+          <div class="days-grid">
+            <!-- Offset de início -->
+            <div class="day-box empty"></div>
+            <div class="day-box empty"></div>
+            <div class="day-box empty"></div>
+            <div class="day-box empty"></div>
+
+            <!-- Dias 1 a 31 -->
+            <div class="day-box">1</div>
+            <div class="day-box has-exam">2</div>
+            <div class="day-box">3</div>
+            <div class="day-box">4</div>
+            <div class="day-box">5</div>
+            <div class="day-box">6</div>
+            <div class="day-box">7</div>
+            <div class="day-box">8</div>
+            <div class="day-box">9</div>
+            <div class="day-box">10</div>
+            <div class="day-box">11</div>
+            <div class="day-box has-event">12</div>
+            <div class="day-box">13</div>
+            <div class="day-box">14</div>
+            <div class="day-box has-event">15</div>
+            <div class="day-box">16</div>
+            <div class="day-box">17</div>
+            <div class="day-box">18</div>
+            <div class="day-box">19</div>
+            <div class="day-box">20</div>
+            <div class="day-box">21</div>
+            <div class="day-box">22</div>
+            <div class="day-box">23</div>
+            <div class="day-box">24</div>
+            <div class="day-box has-exam">25</div>
+            <div class="day-box has-exam">26</div>
+            <div class="day-box has-exam">27</div>
+            <div class="day-box today">28</div>
+            <div class="day-box">29</div>
+            <div class="day-box">30</div>
+            <div class="day-box">31</div>
+          </div>
+
+          <!-- Legenda -->
+          <div class="calendar-legend">
+            <div class="legend-item"><span class="dot today"></span> Dia Atual</div>
+            <div class="legend-item"><span class="dot exam"></span> Avaliações / Provas</div>
+            <div class="legend-item"><span class="dot event"></span> Eventos / Feriados</div>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Próximos Eventos -->
+        <div class="calendar-card events-card">
+          <h3>Próximos Eventos</h3>
+          
+          <div class="events-list">
+            <div class="event-item">
+              <div class="event-date-badge">
+                <span class="day">12</span>
+                <span class="month">Out</span>
+              </div>
+              <div class="event-info">
+                <h4>Nossa Senhora Aparecida</h4>
+                <p>Feriado Nacional. Não haverá aula.</p>
+              </div>
+            </div>
+
+            <div class="event-item">
+              <div class="event-date-badge">
+                <span class="day">15</span>
+                <span class="month">Out</span>
+              </div>
+              <div class="event-info">
+                <h4>Dia do Professor</h4>
+                <p>Recesso escolar institucional.</p>
+              </div>
+            </div>
+
+            <div class="event-item">
+              <div class="event-date-badge" style="color: #ef4444; background: #fee2e2;">
+                <span class="day">25</span>
+                <span class="month">Out</span>
+              </div>
+              <div class="event-info">
+                <h4>Provas Bimestrais</h4>
+                <p>Início do período de avaliações do 3º Bimestre.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    Auth.requireAuth();
+    Auth.loadProfile();
+  </script>
+</body>
+</html>

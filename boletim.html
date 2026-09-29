@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boletim - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos do Boletim */
+    .boletim-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .period-selector select {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--card-bg);
+      font-weight: 600;
+      color: var(--text-color);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .stat-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    .stat-value { font-size: 2rem; font-weight: 800; }
+    .stat-value.success { color: #10b981; }
+    .stat-value.warning { color: #f59e0b; }
+    .stat-value.danger { color: #ef4444; }
+
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow-x: auto; /* Garante responsividade horizontal */
+      box-shadow: var(--shadow-sm);
+    }
+
+    .grades-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      min-width: 800px;
+    }
+
+    .grades-table th {
+      background: #f8fafc;
+      padding: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .grades-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95rem;
+      color: var(--text-color);
+    }
+
+    .grades-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .grades-table tr:hover td {
+      background: #f1f5f9;
+    }
+
+    .subject-name {
+      text-align: left !important;
+      font-weight: 600;
+    }
+
+    .grade {
+      font-weight: bold;
+    }
+
+    .grade.low { color: #ef4444; }
+    .grade.high { color: #10b981; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .status-aprovado { background: #d1fae5; color: #047857; }
+    .status-cursando { background: #e0f2fe; color: #0369a1; }
+    .status-recuperacao { background: #ffedd5; color: #c2410c; }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html">Hub Central</a>
+        <a href="boletim.html" class="active">Desempenho Acadêmico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="horarios.html">Grade de Horários</a>
+        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Boletim Escolar</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <!-- Controles Superiores -->
+      <div class="boletim-header">
+        <div>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Consulte as suas notas e faltas do período letivo atual.</p>
+        </div>
+        <div class="period-selector">
+          <select>
+            <option value="2026">Ano Letivo 2026</option>
+            <option value="2025">Ano Letivo 2025</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Métricas Resumo -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-title">Coeficiente de Rendimento</span>
+          <span class="stat-value success">8.75</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Faltas Acumuladas</span>
+          <span class="stat-value">12</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Disciplinas em Alerta</span>
+          <span class="stat-value warning">1</span>
+        </div>
+      </div>
+
+      <!-- Tabela de Notas -->
+      <div class="table-container">
+        <table class="grades-table">
+          <thead>
+            <tr>
+              <th class="subject-name">Disciplina</th>
+              <th>1º Bimestre</th>
+              <th>2º Bimestre</th>
+              <th>3º Bimestre</th>
+              <th>4º Bimestre</th>
+              <th>Média Atual</th>
+              <th>Faltas</th>
+              <th>Situação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="subject-name">Matemática Aplicada</td>
+              <td class="grade high">9.5</td>
+              <td class="grade high">8.8</td>
+              <td class="grade">-</td>
+              <td class="grade">-</td>
+              <td class="grade high">9.1</td>
+              <td>2</td>
+              <td><span class="status-badge status-cursando">Cursando</span></td>
+            </tr>
+            <tr>
+              <td class="subject-name">Física Quântica Base</td>
+              <td class="grade">7.0</td>
+              <td class="grade low">5.5</td>
+              <td class="grade">-</td>
+              <td class="grade">-</td>
+              <td class="grade low">6.2</td>
+              <td>4</td>
+              <td><span class="status-badge status-recuperacao">Atenção</span></td>
+            </tr>
+            <tr>
+              <td class="subject-name">Literatura Contemporânea</td>
+              <td class="grade high">10.0</td>
+              <td class="grade high">9.5</td>
+              <td class="grade">-</td>
+              <td class="grade">-</td>
+              <td class="grade high">9.7</td>
+              <td>0</td>
+              <td><span class="status-badge status-cursando">Cursando</span></td>
+            </tr>
+            <tr>
+              <td class="subject-name">Biologia Celular</td>
+              <td class="grade">8.0</td>
+              <td class="grade">8.5</td>
+              <td class="grade">-</td>
+              <td class="grade">-</td>
+              <td class="grade">8.2</td>
+              <td>6</td>
+              <td><span class="status-badge status-cursando">Cursando</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Validação de segurança e carregamento de dados do usuário
+    Auth.requireAuth();
+    Auth.loadProfile();
+  </script>
+</body>
+</html>

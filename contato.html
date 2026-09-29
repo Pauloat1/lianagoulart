@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fale Connosco - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos para a Página de Contacto */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      .contact-layout {
+        grid-template-columns: 3fr 2fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-lg, 12px);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color, #e2e8f0);
+    }
+
+    /* Formulário */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-color, #1e293b);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color, #cbd5e1);
+      border-radius: var(--radius-md, 8px);
+      font-size: 0.95rem;
+      color: var(--text-color, #0f172a);
+      background-color: #f8fafc;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary, #2563eb);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn-submit {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 0.85rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-md, 8px);
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark, #1d4ed8);
+    }
+
+    /* Painel Lateral - Informações */
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-item h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 0.25rem;
+    }
+
+    .info-item p {
+      font-size: 0.9rem;
+      color: var(--text-muted, #64748b);
+    }
+
+    .faq-box {
+      background: #f1f5f9;
+      padding: 1rem;
+      border-radius: var(--radius-md, 8px);
+      margin-top: 2rem;
+    }
+
+    .faq-box h4 {
+      font-size: 0.9rem;
+      color: var(--primary, #2563eb);
+      margin-bottom: 0.5rem;
+    }
+
+    .faq-box p {
+      font-size: 0.85rem;
+      color: var(--text-muted, #475569);
+      line-height: 1.5;
+    }
+    
+    /* Mensagem de Sucesso */
+    .alert-success {
+      display: none;
+      background-color: #dcfce7;
+      color: #166534;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      border: 1px solid #bbf7d0;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar (Atualizada com novo item de Contacto) -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html">Hub Central</a>
+        <a href="boletim.html">Desempenho Académico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="calendarios.html">Calendário Académico</a>
+        <a href="horarios.html">Grade de Horários</a>
+        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+        <a href="contato.html" class="active">Fale Connosco</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Fale Connosco</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <div class="contact-layout">
+        
+        <!-- Coluna Esquerda: Formulário -->
+        <div class="card">
+          <h3>Envie uma Mensagem</h3>
+          
+          <div id="successMessage" class="alert-success">
+            A sua mensagem foi enviada com sucesso! A nossa equipa responderá em breve.
+          </div>
+
+          <form id="contactForm" onsubmit="handleContactSubmit(event)">
+            <div class="form-group">
+              <label for="assunto">Setor / Assunto *</label>
+              <select id="assunto" class="form-control" required>
+                <option value="">Selecione o departamento...</option>
+                <option value="academico">Secretaria Académica (Documentos, Notas, Matrículas)</option>
+                <option value="financeiro">Departamento Financeiro (Mensalidades, Acordos)</option>
+                <option value="coordenacao">Coordenação Pedagógica</option>
+                <option value="suporte">Suporte Técnico (Problemas no Portal)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="mensagem">Mensagem *</label>
+              <textarea id="mensagem" class="form-control" placeholder="Descreva detalhadamente a sua dúvida ou solicitação..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Enviar Mensagem</button>
+          </form>
+        </div>
+
+        <!-- Coluna Direita: Informações de Contacto -->
+        <div class="card">
+          <h3>Canais Diretos</h3>
+          
+          <div class="info-item">
+            <h4>Telefone da Secretaria</h4>
+            <p>(85) 3000-0000</p>
+          </div>
+          
+          <div class="info-item">
+            <h4>E-mail Geral</h4>
+            <p>atendimento@goularteduca.edu.br</p>
+          </div>
+
+          <div class="info-item">
+            <h4>Horário de Atendimento</h4>
+            <p>Segunda a Sexta: 07h00 às 18h00<br>Sábados: 08h00 às 12h00</p>
+          </div>
+
+          <div class="faq-box">
+            <h4>Precisa de uma declaração de matrícula?</h4>
+            <p>Muitos documentos podem ser emitidos automaticamente através do <strong>Hub Central</strong> sem necessidade de abrir um chamado.</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Mock da função de autenticação
+    if(typeof Auth !== 'undefined') {
+      Auth.requireAuth();
+      Auth.loadProfile();
+    }
+
+    // Lógica simples do formulário
+    function handleContactSubmit(event) {
+      event.preventDefault();
+      
+      const form = document.getElementById('contactForm');
+      const successMsg = document.getElementById('successMessage');
+      const btn = form.querySelector('.btn-submit');
+      
+      // Estado de carregamento simulado
+      const originalText = btn.innerText;
+      btn.innerText = 'A enviar...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        form.reset();
+        successMsg.style.display = 'block';
+        btn.innerText = originalText;
+        btn.disabled = false;
+        
+        // Esconder mensagem após 5 segundos
+        setTimeout(() => {
+          successMsg.style.display = 'none';
+        }, 5000);
+      }, 1200);
+    }
+  </script>
+</body>
+</html>

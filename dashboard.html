@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hub Central - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos do Dashboard (Complementares ao style.css) */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .welcome-text h1 { font-size: 1.75rem; margin-bottom: 0.5rem; font-weight: 700; }
+    .welcome-text p { color: #cbd5e1; font-size: 0.95rem; }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+    .stat-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); }
+    
+    .panel-section h3 { margin-bottom: 1.5rem; font-size: 1.25rem; color: var(--primary); }
+    
+    .list-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+      transition: var(--transition);
+    }
+    
+    .list-item:hover { border-color: var(--accent); }
+    .item-icon { width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
+    .item-content h4 { font-size: 1rem; margin-bottom: 0.25rem; }
+    .item-content p { font-size: 0.85rem; color: var(--text-muted); }
+    
+    @media (max-width: 1024px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html" class="active">Hub Central</a>
+        <a href="boletim.html">Desempenho Acadêmico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="horarios.html">Grade de Horários</a>
+        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Visão Geral do Sistema</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <!-- Banner -->
+      <div class="welcome-banner">
+        <div class="welcome-text">
+          <h1 id="welcomeName">Olá, estudante!</h1>
+          <p>Confira o resumo das suas atividades e comunicados corporativos.</p>
+        </div>
+        <div>
+          <span class="badge green" style="background: rgba(255,255,255,0.2); color: white;">Ano Letivo 2026</span>
+        </div>
+      </div>
+
+      <!-- Métricas Rápidas -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-title">Média Geral</span>
+          <span class="stat-value">8.75</span>
+          <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">+ 0.5 neste bimestre</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Frequência</span>
+          <span class="stat-value">96%</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">2 faltas registradas</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Pendências</span>
+          <span class="stat-value" style="color: #ef4444;">1</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Trabalho de Biologia</span>
+        </div>
+      </div>
+
+      <!-- Layout Inferior (Avisos + Agenda) -->
+      <div class="dashboard-layout">
+        <!-- Coluna Esquerda: Comunicados -->
+        <div class="panel-section">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3>Comunicados Recentes</h3>
+            <a href="avisos.html" style="font-size: 0.875rem; color: var(--accent); text-decoration: none; font-weight: 600;">Ver todos</a>
+          </div>
+          
+          <div class="list-item">
+            <div class="item-icon" style="background: #fee2e2; color: #ef4444;">!</div>
+            <div class="item-content">
+              <div style="display: flex; justify-content: space-between;">
+                <h4>Atualização no Cronograma de Provas</h4>
+                <span class="badge orange">Urgente</span>
+              </div>
+              <p>As avaliações do 3º Bimestre foram reagendadas. Verifique o novo calendário no portal.</p>
+              <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #94a3b8;">Há 2 horas • Coordenação</p>
+            </div>
+          </div>
+
+          <div class="list-item">
+            <div class="item-icon">G</div>
+            <div class="item-content">
+              <h4>Feira de Ciências 2026</h4>
+              <p>As inscrições para os projetos interdisciplinares já estão abertas na secretaria.</p>
+              <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #94a3b8;">Ontem • Direção</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Agenda -->
+        <div class="panel-section">
+          <h3>Agenda de Hoje</h3>
+          <div style="background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 1.5rem;">
+            <div style="border-left: 2px solid var(--border-color); margin-left: 1rem; padding-left: 1.5rem; position: relative;">
+              
+              <!-- Aula 1 -->
+              <div style="margin-bottom: 1.5rem; position: relative;">
+                <div style="position: absolute; left: -1.85rem; top: 0; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; border: 3px solid white;"></div>
+                <p style="font-size: 0.75rem; color: var(--accent); font-weight: bold; margin-bottom: 0.25rem;">07:00 - 08:40 (Atual)</p>
+                <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">Matemática Aplicada</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Prof. Roberto • Sala 12</p>
+              </div>
+
+              <!-- Aula 2 -->
+              <div style="margin-bottom: 1.5rem; position: relative;">
+                <div style="position: absolute; left: -1.85rem; top: 0; width: 12px; height: 12px; background: var(--border-color); border-radius: 50%; border: 3px solid white;"></div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 0.25rem;">09:00 - 10:40</p>
+                <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">Física Quântica Base</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Profa. Helena • Lab 2</p>
+              </div>
+
+            </div>
+            <a href="horarios.html" class="btn-primary" style="width: 100%; display: block; margin-top: 1rem;">Ver Grade Completa</a>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Validação de segurança e carregamento de dados
+    Auth.requireAuth();
+    Auth.loadProfile();
+    
+    // Customização extra do dashboard
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('welcomeName').innerText = `Bem-vindo(a), ${user.nome.split(' ')[0]}!`;
+    }
+  </script>
+</body>
+</html>

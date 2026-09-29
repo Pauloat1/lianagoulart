@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avaliações e Gabaritos - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos para Avaliações e Gabaritos */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--card-bg, #ffffff);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg, 12px);
+      border: 1px solid var(--border-color, #e2e8f0);
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .filter-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted, #64748b);
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-group select, .filter-group input {
+      padding: 0.75rem;
+      border: 1px solid var(--border-color, #cbd5e1);
+      border-radius: var(--radius-md, 8px);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .filter-group select:focus, .filter-group input:focus {
+      border-color: var(--primary, #2563eb);
+    }
+
+    .btn-filter {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-md, 8px);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      height: 42px;
+    }
+
+    .btn-filter:hover {
+      background: var(--primary-dark, #1d4ed8);
+    }
+
+    /* Grelha de Cartões de Avaliação */
+    .exams-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .exams-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .exams-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .exam-card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-md, 8px);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .exam-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+    }
+
+    .exam-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .exam-subject {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-color, #0f172a);
+    }
+
+    .exam-date {
+      font-size: 0.8rem;
+      color: var(--text-muted, #64748b);
+      background: #f1f5f9;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .exam-details {
+      font-size: 0.9rem;
+      color: var(--text-muted, #475569);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .status-available {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-pending {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .btn-download {
+      display: block;
+      text-align: center;
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--primary, #2563eb);
+      background: #eff6ff;
+      color: var(--primary, #2563eb);
+      font-weight: 600;
+      border-radius: var(--radius-md, 8px);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-download:hover {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+    }
+
+    .btn-download.disabled {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .btn-download.disabled:hover {
+      background: #f1f5f9;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html">Hub Central</a>
+        <a href="escola.html">A Escola</a>
+        <a href="boletim.html">Desempenho Académico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="calendarios.html">Calendário Académico</a>
+        <a href="horarios.html">Grade de Horários</a>
+        <a href="gabaritos.html" class="active">Avaliações e Gabaritos</a>
+        <a href="contato.html">Fale Connosco</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Avaliações e Gabaritos</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <!-- Barra de Filtros -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label for="trimestre">Trimestre</label>
+          <select id="trimestre">
+            <option value="todos">Todos os Trimestres</option>
+            <option value="3">3º Trimestre (Atual)</option>
+            <option value="2">2º Trimestre</option>
+            <option value="1">1º Trimestre</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="disciplina">Disciplina</label>
+          <select id="disciplina">
+            <option value="todas">Todas as Disciplinas</option>
+            <option value="matematica">Matemática</option>
+            <option value="fisica">Física</option>
+            <option value="biologia">Biologia</option>
+            <option value="historia">História</option>
+          </select>
+        </div>
+
+        <button class="btn-filter">Filtrar Resultados</button>
+      </div>
+
+      <!-- Lista de Avaliações -->
+      <div class="exams-grid">
+        
+        <!-- Cartão 1: Gabarito Disponível -->
+        <div class="exam-card">
+          <div>
+            <div class="exam-header">
+              <span class="exam-subject">Matemática</span>
+              <span class="exam-date">10 Out 2026</span>
+            </div>
+            <span class="status-badge status-available">Gabarito Disponível</span>
+            <p class="exam-details">Prova Bimestral de Matemática<br>Assuntos: Funções e Trigonometria básica.</p>
+          </div>
+          <a href="#" class="btn-download" onclick="alert('Iniciando transferência do PDF...')">Ver Gabarito (PDF)</a>
+        </div>
+
+        <!-- Cartão 2: Gabarito Disponível -->
+        <div class="exam-card">
+          <div>
+            <div class="exam-header">
+              <span class="exam-subject">Física</span>
+              <span class="exam-date">12 Out 2026</span>
+            </div>
+            <span class="status-badge status-available">Gabarito Disponível</span>
+            <p class="exam-details">Prova Bimestral de Física<br>Assuntos: Cinemática e Leis de Newton.</p>
+          </div>
+          <a href="#" class="btn-download" onclick="alert('Iniciando transferência do PDF...')">Ver Gabarito (PDF)</a>
+        </div>
+
+        <!-- Cartão 3: Gabarito Pendente -->
+        <div class="exam-card">
+          <div>
+            <div class="exam-header">
+              <span class="exam-subject">Biologia</span>
+              <span class="exam-date">25 Out 2026</span>
+            </div>
+            <span class="status-badge status-pending">Em Correção</span>
+            <p class="exam-details">Prova Bimestral de Biologia<br>Assuntos: Citologia e Genética.</p>
+          </div>
+          <a href="#" class="btn-download disabled" onclick="event.preventDefault()">Gabarito Indisponível</a>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    if(typeof Auth !== 'undefined') {
+      Auth.requireAuth();
+      Auth.loadProfile();
+    }
+  </script>
+</body>
+</html>

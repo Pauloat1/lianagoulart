@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Escola - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos para a Página Institucional */
+    .school-header-banner {
+      background: linear-gradient(135deg, var(--primary, #2563eb), var(--primary-dark, #1d4ed8));
+      border-radius: var(--radius-lg, 12px);
+      padding: 3rem 2rem;
+      color: #ffffff;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+    }
+
+    .school-header-banner h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .school-header-banner p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    /* Grelha de Missão, Visão e Valores */
+    .identity-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .identity-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .identity-card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-md, 8px);
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--transition, all 0.2s);
+    }
+
+    .identity-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+      border-color: var(--primary-light, #3b82f6);
+    }
+
+    .identity-icon {
+      width: 48px;
+      height: 48px;
+      background: #eff6ff;
+      color: var(--primary, #2563eb);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1rem auto;
+      font-weight: bold;
+    }
+
+    .identity-card h3 {
+      font-size: 1.15rem;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 0.75rem;
+    }
+
+    .identity-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted, #64748b);
+      line-height: 1.5;
+    }
+
+    /* Secção de Infraestrutura */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border-color, #e2e8f0);
+    }
+
+    .infra-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .infra-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .infra-card {
+      display: flex;
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-md, 8px);
+      overflow: hidden;
+    }
+
+    .infra-image-placeholder {
+      width: 120px;
+      background: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .infra-content {
+      padding: 1.25rem;
+    }
+
+    .infra-content h4 {
+      font-size: 1.05rem;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 0.5rem;
+    }
+
+    .infra-content p {
+      font-size: 0.85rem;
+      color: var(--text-muted, #64748b);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html">Hub Central</a>
+        <a href="escola.html" class="active">A Escola</a>
+        <a href="boletim.html">Desempenho Académico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="calendarios.html">Calendário Académico</a>
+        <a href="horarios.html">Grade de Horários</a>
+        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+        <a href="contato.html">Fale Connosco</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Institucional</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <!-- Banner de Destaque -->
+      <div class="school-header-banner">
+        <h2>Tradição e Inovação no Ensino</h2>
+        <p>Conheça mais sobre a história, os valores e a estrutura que fazem do Colégio Goulart um ambiente de excelência para o desenvolvimento do seu filho.</p>
+      </div>
+
+      <!-- Missão, Visão e Valores -->
+      <div class="identity-grid">
+        <div class="identity-card">
+          <div class="identity-icon">M</div>
+          <h3>A Nossa Missão</h3>
+          <p>Proporcionar uma educação de excelência, formando cidadãos críticos, éticos e preparados para os desafios de uma sociedade globalizada.</p>
+        </div>
+        
+        <div class="identity-card">
+          <div class="identity-icon">V</div>
+          <h3>A Nossa Visão</h3>
+          <p>Ser referência nacional em inovação pedagógica e desenvolvimento humano, aliando tecnologia à tradição no ensino.</p>
+        </div>
+
+        <div class="identity-card">
+          <div class="identity-icon">V</div>
+          <h3>Os Nossos Valores</h3>
+          <p>Ética, respeito à diversidade, compromisso com o conhecimento, responsabilidade socioambiental e inovação contínua.</p>
+        </div>
+      </div>
+
+      <!-- Infraestrutura -->
+      <h3 class="section-title">A Nossa Estrutura</h3>
+      <div class="infra-grid">
+        
+        <div class="infra-card">
+          <div class="infra-image-placeholder">Imagem</div>
+          <div class="infra-content">
+            <h4>Complexo Laboratorial</h4>
+            <p>Laboratórios modernos de Química, Física e Biologia equipados com tecnologia de ponta para aulas práticas focadas na metodologia Maker.</p>
+          </div>
+        </div>
+
+        <div class="infra-card">
+          <div class="infra-image-placeholder">Imagem</div>
+          <div class="infra-content">
+            <h4>Biblioteca Digital e Física</h4>
+            <p>Acervo com mais de 15.000 títulos físicos, além de acesso exclusivo a plataformas de pesquisa digital e espaços de estudo silenciosos.</p>
+          </div>
+        </div>
+
+        <div class="infra-card">
+          <div class="infra-image-placeholder">Imagem</div>
+          <div class="infra-content">
+            <h4>Centro Desportivo</h4>
+            <p>Duas quadras polidesportivas cobertas, piscina semiolímpica aquecida e estúdio de artes marciais e dança.</p>
+          </div>
+        </div>
+
+        <div class="infra-card">
+          <div class="infra-image-placeholder">Imagem</div>
+          <div class="infra-content">
+            <h4>Espaço Tecnológico</h4>
+            <p>Salas de informática atualizadas com impressoras 3D, kits de robótica educativa e estações de desenvolvimento de software.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Mock da função de autenticação
+    if(typeof Auth !== 'undefined') {
+      Auth.requireAuth();
+      Auth.loadProfile();
+    }
+  </script>
+</body>
+</html>

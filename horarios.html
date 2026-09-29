@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade de Horários - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos para a Página de Horários */
+    .schedule-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--card-bg, #ffffff);
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius-lg, 12px);
+      border: 1px solid var(--border-color, #e2e8f0);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    }
+
+    .class-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .class-badge {
+      background: #eff6ff;
+      color: var(--primary, #2563eb);
+      font-weight: 700;
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-md, 8px);
+      font-size: 0.9rem;
+      border: 1px solid #bfdbfe;
+    }
+
+    .btn-action {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: var(--radius-md, 8px);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-action:hover {
+      background: var(--primary-dark, #1d4ed8);
+    }
+
+    /* Tabela de Horários */
+    .table-container {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-lg, 12px);
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+      overflow-x: auto;
+    }
+
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 750px;
+    }
+
+    .schedule-table th {
+      background: #f8fafc;
+      color: var(--text-color, #0f172a);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 1rem;
+      border-bottom: 2px solid var(--border-color, #e2e8f0);
+      text-align: center;
+    }
+
+    .schedule-table th:first-child {
+      text-align: left;
+      width: 130px;
+    }
+
+    .schedule-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color, #e2e8f0);
+      vertical-align: top;
+      height: 90px;
+    }
+
+    .time-slot {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-muted, #475569);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .time-slot .slot-num {
+      color: var(--primary, #2563eb);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    /* Cartão de Disciplina dentro da Célula */
+    .subject-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary, #2563eb);
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .subject-box:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.08));
+    }
+
+    .subject-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 0.2rem;
+    }
+
+    .subject-teacher {
+      font-size: 0.78rem;
+      color: var(--text-muted, #64748b);
+    }
+
+    .subject-room {
+      font-size: 0.72rem;
+      color: #059669;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    /* Variação de Cores por Área */
+    .subject-box.exatas { border-left-color: #2563eb; }
+    .subject-box.humanas { border-left-color: #d97706; }
+    .subject-box.biologicas { border-left-color: #10b981; }
+    .subject-box.linguagens { border-left-color: #8b5cf6; }
+
+    /* Intervalo / Recreio */
+    .break-row td {
+      background: #f1f5f9;
+      height: 45px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-muted, #64748b);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html">Hub Central</a>
+        <a href="escola.html">A Escola</a>
+        <a href="boletim.html">Desempenho Académico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="calendarios.html">Calendário Académico</a>
+        <a href="horarios.html" class="active">Grade de Horários</a>
+        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+        <a href="contato.html">Fale Connosco</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Grade de Horários</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <!-- Barra de Ações / Filtro -->
+      <div class="schedule-toolbar">
+        <div class="class-info">
+          <span class="class-badge">3º Ano - Ensino Médio (Turma A)</span>
+          <span style="font-size: 0.85rem; color: #64748b;">Turno: Manhã</span>
+        </div>
+        <button class="btn-action" onclick="window.print()">
+          Imprimir / Guardar PDF
+        </button>
+      </div>
+
+      <!-- Tabela Semanal de Horários -->
+      <div class="table-container">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Horário</th>
+              <th>Segunda-feira</th>
+              <th>Terça-feira</th>
+              <th>Quarta-feira</th>
+              <th>Quinta-feira</th>
+              <th>Sexta-feira</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 1ª Aula -->
+            <tr>
+              <td>
+                <div class="time-slot">
+                  <span class="slot-num">1ª Aula</span>
+                  07:30 - 08:20
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Matemática</div>
+                    <div class="subject-teacher">Prof. Carlos Silva</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box biologicas">
+                  <div>
+                    <div class="subject-title">Biologia</div>
+                    <div class="subject-teacher">Profa. Mariana Costa</div>
+                  </div>
+                  <div class="subject-room">Lab 02</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box linguagens">
+                  <div>
+                    <div class="subject-title">Português</div>
+                    <div class="subject-teacher">Profa. Ana Lima</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Física</div>
+                    <div class="subject-teacher">Prof. Roberto Dias</div>
+                  </div>
+                  <div class="subject-room">Lab 01</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box humanas">
+                  <div>
+                    <div class="subject-title">História</div>
+                    <div class="subject-teacher">Prof. Fernando Rocha</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- 2ª Aula -->
+            <tr>
+              <td>
+                <div class="time-slot">
+                  <span class="slot-num">2ª Aula</span>
+                  08:20 - 09:10
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Matemática</div>
+                    <div class="subject-teacher">Prof. Carlos Silva</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Química</div>
+                    <div class="subject-teacher">Profa. Juliana Paes</div>
+                  </div>
+                  <div class="subject-room">Lab 03</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box linguagens">
+                  <div>
+                    <div class="subject-title">Inglês</div>
+                    <div class="subject-teacher">Prof. John Miller</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Física</div>
+                    <div class="subject-teacher">Prof. Roberto Dias</div>
+                  </div>
+                  <div class="subject-room">Lab 01</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box humanas">
+                  <div>
+                    <div class="subject-title">Geografia</div>
+                    <div class="subject-teacher">Profa. Camila Alves</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Intervalo -->
+            <tr class="break-row">
+              <td>
+                <div class="time-slot" style="color: #64748b;">
+                  09:10 - 09:30
+                </div>
+              </td>
+              <td colspan="5">Intervalo / Recreio</td>
+            </tr>
+
+            <!-- 3ª Aula -->
+            <tr>
+              <td>
+                <div class="time-slot">
+                  <span class="slot-num">3ª Aula</span>
+                  09:30 - 10:20
+                </div>
+              </td>
+              <td>
+                <div class="subject-box humanas">
+                  <div>
+                    <div class="subject-title">Filosofia</div>
+                    <div class="subject-teacher">Prof. Marcelo Neves</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Química</div>
+                    <div class="subject-teacher">Profa. Juliana Paes</div>
+                  </div>
+                  <div class="subject-room">Lab 03</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box linguagens">
+                  <div>
+                    <div class="subject-title">Redação</div>
+                    <div class="subject-teacher">Profa. Ana Lima</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box biologicas">
+                  <div>
+                    <div class="subject-title">Ed. Física</div>
+                    <div class="subject-teacher">Prof. Paulo Ramos</div>
+                  </div>
+                  <div class="subject-room">Ginásio</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box linguagens">
+                  <div>
+                    <div class="subject-title">Literatura</div>
+                    <div class="subject-teacher">Profa. Beatriz Castro</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- 4ª Aula -->
+            <tr>
+              <td>
+                <div class="time-slot">
+                  <span class="slot-num">4ª Aula</span>
+                  10:20 - 11:10
+                </div>
+              </td>
+              <td>
+                <div class="subject-box linguagens">
+                  <div>
+                    <div class="subject-title">Artes</div>
+                    <div class="subject-teacher">Profa. Clara Nunes</div>
+                  </div>
+                  <div class="subject-room">Ateliê</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box humanas">
+                  <div>
+                    <div class="subject-title">Sociologia</div>
+                    <div class="subject-teacher">Prof. Marcelo Neves</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Matemática</div>
+                    <div class="subject-teacher">Prof. Carlos Silva</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box biologicas">
+                  <div>
+                    <div class="subject-title">Biologia</div>
+                    <div class="subject-teacher">Profa. Mariana Costa</div>
+                  </div>
+                  <div class="subject-room">Sala 204</div>
+                </div>
+              </td>
+              <td>
+                <div class="subject-box exatas">
+                  <div>
+                    <div class="subject-title">Oficina de Robótica</div>
+                    <div class="subject-teacher">Prof. Igor Santos</div>
+                  </div>
+                  <div class="subject-room">Lab Maker</div>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    if(typeof Auth !== 'undefined') {
+      Auth.requireAuth();
+      Auth.loadProfile();
+    }
+  </script>
+</body>
+</html>
