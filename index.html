@@ -324,9 +324,9 @@
 
   <script src="js/auth.js"></script>
   <script>
-    // Se o utilizador já estiver autenticado, redireciona diretamente para o Dashboard
+    // Se o utilizador já tiver uma sessão válida ativa, entra direto no Dashboard
     document.addEventListener("DOMContentLoaded", function() {
-      if (typeof Auth !== 'undefined' && Auth.isLoggedIn && Auth.isLoggedIn()) {
+      if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
         window.location.href = "dashboard.html";
       }
     });
@@ -343,16 +343,16 @@
         return;
       }
 
-      // Executa login através da camada Auth existente
+      // 1. Grava a sessão no LocalStorage de forma síncrona
       if (typeof Auth !== 'undefined' && Auth.login) {
         Auth.login(email, password);
-        window.location.href = "dashboard.html";
       } else {
-        // Fallback de segurança se o ficheiro JS não tiver sido carregado
         localStorage.setItem("userLoggedIn", "true");
-        localStorage.setItem("userName", email.split('@')[0] || "Aluno Goulart");
-        window.location.href = "dashboard.html";
+        localStorage.setItem("userName", email.split('@')[0]);
       }
+
+      // 2. Redireciona para o dashboard com a sessão garantida
+      window.location.href = "dashboard.html";
     }
   </script>
 </body>
