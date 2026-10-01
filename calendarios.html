@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendário Académico - Portal Goulart Educa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Estilos Específicos para o Calendário Académico */
+    .calendar-wrapper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 992px) {
+      .calendar-wrapper {
+        grid-template-columns: 2.2fr 1fr;
+      }
+    }
+
+    .calendar-card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-lg, 12px);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    }
+
+    /* Controles Superiores do Mês */
+    .calendar-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .calendar-title-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .calendar-title-nav h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-color, #0f172a);
+      margin: 0;
+      min-width: 180px;
+    }
+
+    .btn-nav-cal {
+      background: #f1f5f9;
+      border: 1px solid var(--border-color, #cbd5e1);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+      color: #334155;
+      transition: all 0.2s;
+    }
+
+    .btn-nav-cal:hover {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+      border-color: var(--primary, #2563eb);
+    }
+
+    /* Filtros por Categoria */
+    .category-filter {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid var(--border-color, #cbd5e1);
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip.active {
+      background: var(--primary, #2563eb);
+      color: #ffffff;
+      border-color: var(--primary, #2563eb);
+    }
+
+    /* Grelha de Dias da Semana e do Mês */
+    .calendar-grid-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .weekday-header {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--text-muted, #64748b);
+      padding: 0.5rem 0;
+      text-transform: uppercase;
+      background: #f8fafc;
+      border-radius: 6px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .day-cell {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      min-height: 90px;
+      padding: 0.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: border-color 0.2s, background 0.2s;
+      box-sizing: border-box;
+    }
+
+    .day-cell:hover {
+      border-color: var(--primary, #2563eb);
+      background: #f0f7ff;
+    }
+
+    .day-cell.other-month {
+      background: #f8fafc;
+      opacity: 0.45;
+    }
+
+    .day-cell.today {
+      background: #eff6ff;
+      border: 2px solid var(--primary, #2563eb);
+    }
+
+    .day-number {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-color, #0f172a);
+      margin-bottom: 0.25rem;
+    }
+
+    .event-dots {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .event-tag {
+      font-size: 0.68rem;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    .tag-prova { background: #fef2f2; color: #dc2626; border-left: 3px solid #dc2626; }
+    .tag-feriado { background: #fef9c3; color: #854d0e; border-left: 3px solid #ca8a04; }
+    .tag-evento { background: #eff6ff; color: #1d4ed8; border-left: 3px solid #2563eb; }
+    .tag-reuniao { background: #f3e8ff; color: #6b21a8; border-left: 3px solid #9333ea; }
+
+    /* Painel Lateral de Eventos */
+    .events-sidebar-card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: var(--radius-lg, 12px);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+    }
+
+    .events-sidebar-card h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 1.25rem 0;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .event-item-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: 10px;
+      padding: 0.9rem;
+      margin-bottom: 0.85rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .event-item-card:hover {
+      transform: translateX(3px);
+      box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
+    }
+
+    .event-date-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.4rem;
+    }
+
+    .event-item-title {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #0f172a;
+      margin-bottom: 0.25rem;
+    }
+
+    .event-item-desc {
+      font-size: 0.8rem;
+      color: #64748b;
+      line-height: 1.4;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">Goulart<span>Educa</span></div>
+      <nav>
+        <a href="dashboard.html">Hub Central</a>
+        <a href="escola.html">A Escola</a>
+        <a href="boletim.html">Desempenho Académico</a>
+        <a href="avisos.html">Comunicados</a>
+        <a href="calendarios.html" class="active">Calendário Académico</a>
+        <a href="horarios.html">Grade de Horários</a>
+        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+        <a href="contato.html">Fale Connosco</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h2>Calendário Académico</h2>
+        </div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p id="userName" class="name">Carregando...</p>
+            <p id="userClass" class="role">Carregando...</p>
+          </div>
+          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+        </div>
+      </header>
+
+      <!-- Layout do Calendário -->
+      <div class="calendar-wrapper">
+        
+        <!-- Cartão Principal do Calendário -->
+        <div class="calendar-card">
+          
+          <!-- Controles de Navegação e Filtros -->
+          <div class="calendar-controls">
+            <div class="calendar-title-nav">
+              <button class="btn-nav-cal" onclick="changeMonth(-1)" title="Mês Anterior">&lt;</button>
+              <h3 id="currentMonthYear">Outubro 2026</h3>
+              <button class="btn-nav-cal" onclick="changeMonth(1)" title="Próximo Mês">&gt;</button>
+            </div>
+
+            <div class="category-filter">
+              <button class="filter-chip active" onclick="filterCategory('todos', this)">Todos</button>
+              <button class="filter-chip" onclick="filterCategory('prova', this)">Provas</button>
+              <button class="filter-chip" onclick="filterCategory('feriado', this)">Feriados</button>
+              <button class="filter-chip" onclick="filterCategory('evento', this)">Eventos</button>
+              <button class="filter-chip" onclick="filterCategory('reuniao', this)">Reuniões</button>
+            </div>
+          </div>
+
+          <!-- Cabeçalho dos Dias da Semana -->
+          <div class="calendar-grid-header">
+            <div class="weekday-header">Dom</div>
+            <div class="weekday-header">Seg</div>
+            <div class="weekday-header">Ter</div>
+            <div class="weekday-header">Qua</div>
+            <div class="weekday-header">Qui</div>
+            <div class="weekday-header">Sex</div>
+            <div class="weekday-header">Sáb</div>
+          </div>
+
+          <!-- Grelha Dinâmica dos Dias -->
+          <div id="calendarGrid" class="calendar-grid">
+            <!-- Gerado via JavaScript -->
+          </div>
+
+        </div>
+
+        <!-- Painel Lateral de Próximos Eventos -->
+        <aside class="events-sidebar-card">
+          <h4 id="sidebarTitle">Eventos de Outubro</h4>
+          <div id="upcomingEventsList">
+            <!-- Gerado via JavaScript -->
+          </div>
+        </aside>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Inicialização do Estado do Calendário
+    let currentDate = new Date(2026, 9, 1); // Outubro de 2026 (mês 9 = Outubro)
+    let selectedFilter = 'todos';
+
+    // Banco de Dados de Eventos Académicos
+    const eventsData = [
+      { id: 1, date: "2026-10-02", title: "Reunião de Pais e Mestres", category: "reuniao", desc: "Apresentação do rendimento do 3º trimestre." },
+      { id: 2, date: "2026-10-10", title: "Prova Bimestral de Matemática", category: "prova", desc: "Assuntos: Funções e Trigonometria básica." },
+      { id: 3, date: "2026-10-12", title: "Feriado - Nossa Sra. Aparecida", category: "feriado", desc: "Não haverá atividades letivas presenciais ou remotas." },
+      { id: 4, date: "2026-10-15", title: "Dia do Professor (Recesso)", category: "feriado", desc: "Homenagem aos docentes da instituição." },
+      { id: 5, date: "2026-10-22", title: "Feira de Ciências 2026", category: "evento", desc: "Apresentação dos projetos do Ensino Médio no ginásio." },
+      { id: 6, date: "2026-10-25", title: "Prova Bimestral de Biologia", category: "prova", desc: "Assuntos: Citologia e Genética." },
+      { id: 7, date: "2026-11-02", title: "Feriado - Finados", category: "feriado", desc: "Recesso escolar sem atividades acadêmicas." },
+      { id: 8, date: "2026-11-15", title: "Proclamação da República", category: "feriado", desc: "Feriado nacional." },
+      { id: 9, date: "2026-11-20", title: "Simulado Geral ENEM", category: "prova", desc: "Aplicação das provas de Linguagens e Ciências Humanas." }
+    ];
+
+    const monthNames = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    document.addEventListener("DOMContentLoaded", function() {
+      if(typeof Auth !== 'undefined') {
+        Auth.requireAuth();
+        Auth.loadProfile();
+      }
+      renderCalendar();
+    });
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function filterCategory(category, element) {
+      selectedFilter = category;
+      document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+
+      // Atualiza títulos
+      document.getElementById("currentMonthYear").textContent = `${monthNames[month]} ${year}`;
+      document.getElementById("sidebarTitle").textContent = `Eventos de ${monthNames[month]}`;
+
+      const gridContainer = document.getElementById("calendarGrid");
+      gridContainer.innerHTML = "";
+
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+      // Dias do Mês Anterior
+      for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "day-cell other-month";
+        dayDiv.innerHTML = `<span class="day-number">${daysInPrevMonth - i}</span>`;
+        gridContainer.appendChild(dayDiv);
+      }
+
+      // Dias do Mês Atual
+      const todayReal = new Date();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "day-cell";
+
+        const formattedDay = String(day).padStart(2, '0');
+        const formattedMonth = String(month + 1).padStart(2, '0');
+        const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
+
+        // Destaca o dia de hoje se coincidir
+        if (todayReal.getFullYear() === year && todayReal.getMonth() === month && todayReal.getDate() === day) {
+          dayDiv.classList.add("today");
+        }
+
+        let html = `<span class="day-number">${day}</span><div class="event-dots">`;
+
+        // Busca e insere os eventos do dia
+        const dayEvents = eventsData.filter(ev => ev.date === dateStr);
+        dayEvents.forEach(ev => {
+          if (selectedFilter === 'todos' || ev.category === selectedFilter) {
+            html += `<span class="event-tag tag-${ev.category}" title="${ev.title}">${ev.title}</span>`;
+          }
+        });
+
+        html += `</div>`;
+        dayDiv.innerHTML = html;
+        gridContainer.appendChild(dayDiv);
+      }
+
+      // Dias do Mês Seguinte para completar a grelha visual (42 células)
+      const totalCells = firstDayOfMonth + daysInMonth;
+      const nextDays = (totalCells > 35 ? 42 : 35) - totalCells;
+      for (let i = 1; i <= nextDays; i++) {
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "day-cell other-month";
+        dayDiv.innerHTML = `<span class="day-number">${i}</span>`;
+        gridContainer.appendChild(dayDiv);
+      }
+
+      // Renderiza os eventos no Painel Lateral
+      renderSidebarEvents(year, month);
+    }
+
+    function renderSidebarEvents(year, month) {
+      const sidebarContainer = document.getElementById("upcomingEventsList");
+      sidebarContainer.innerHTML = "";
+
+      const formattedMonth = String(month + 1).padStart(2, '0');
+      const monthPrefix = `${year}-${formattedMonth}`;
+
+      const filteredEvents = eventsData.filter(ev => {
+        const isSameMonth = ev.date.startsWith(monthPrefix);
+        const matchesCategory = (selectedFilter === 'todos' || ev.category === selectedFilter);
+        return isSameMonth && matchesCategory;
+      });
+
+      if (filteredEvents.length === 0) {
+        sidebarContainer.innerHTML = `<p style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">Nenhum evento registado nesta categoria para este mês.</p>`;
+        return;
+      }
+
+      filteredEvents.forEach(ev => {
+        const dateParts = ev.date.split('-');
+        const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+        const card = document.createElement("div");
+        card.className = "event-item-card";
+        card.innerHTML = `
+          <span class="event-date-badge tag-${ev.category}">${formattedDate}</span>
+          <div class="event-item-title">${ev.title}</div>
+          <p class="event-item-desc">${ev.desc}</p>
+        `;
+        sidebarContainer.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
