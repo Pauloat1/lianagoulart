@@ -1,295 +1,499 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Avaliações e Gabaritos - Portal Goulart Educa</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Central de Gabaritos - Plataforma Edu</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    /* Estilos Específicos para Avaliações e Gabaritos */
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      background: var(--card-bg, #ffffff);
-      padding: 1.5rem;
-      border-radius: var(--radius-lg, 12px);
-      border: 1px solid var(--border-color, #e2e8f0);
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
-      align-items: flex-end;
+    /* Estilos alinhados com o design das páginas anteriores */
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --danger-color: #ef4444;
     }
 
-    .filter-group {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background-color: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      flex: 1;
-      min-width: 200px;
+      gap: 24px;
     }
 
-    .filter-group label {
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 12px 16px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    /* Layout Principal */
+    .main-content {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    /* Cabeçalho e Seletor de Perfil */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      color: var(--text-main);
+    }
+
+    .role-selector-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .role-selector-card label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .role-select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: #ffffff;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: pointer;
+    }
+
+    /* Cartão do Gestor (Formulário para Novo Gabarito) */
+    .gestor-section {
+      background-color: var(--card-bg);
+      border: 2px dashed var(--primary-color);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      display: none; /* Ativado via JS para perfil Gestor */
+    }
+
+    .gestor-section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
       font-size: 0.85rem;
       font-weight: 600;
-      color: var(--text-muted, #64748b);
-      margin-bottom: 0.5rem;
+      color: var(--text-muted);
     }
 
-    .filter-group select, .filter-group input {
-      padding: 0.75rem;
-      border: 1px solid var(--border-color, #cbd5e1);
-      border-radius: var(--radius-md, 8px);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
+    .form-control {
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
     }
 
-    .filter-group select:focus, .filter-group input:focus {
-      border-color: var(--primary, #2563eb);
-    }
-
-    .btn-filter {
-      background: var(--primary, #2563eb);
+    .btn-submit {
+      background-color: var(--primary-color);
       color: #ffffff;
-      padding: 0.75rem 1.5rem;
+      padding: 12px 20px;
       border: none;
-      border-radius: var(--radius-md, 8px);
+      border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
-      height: 42px;
     }
 
-    .btn-filter:hover {
-      background: var(--primary-dark, #1d4ed8);
+    .btn-submit:hover {
+      background-color: var(--primary-hover);
     }
 
-    /* Grelha de Cartões de Avaliação */
-    .exams-grid {
+    /* Barra de Filtros */
+    .filters-bar {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background-color: #ffffff;
+    }
+
+    /* Lista de Gabaritos em Grid */
+    .gabaritos-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
     }
 
-    @media (min-width: 768px) {
-      .exams-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 1200px) {
-      .exams-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    .exam-card {
-      background: var(--card-bg, #ffffff);
-      border: 1px solid var(--border-color, #e2e8f0);
-      border-radius: var(--radius-md, 8px);
-      padding: 1.5rem;
+    .gabarito-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .exam-card:hover {
+    .gabarito-card:hover {
       transform: translateY(-3px);
-      box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+      box-shadow: 0 8px 12px -2px rgba(0,0,0,0.08);
     }
 
-    .exam-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-
-    .exam-subject {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-color, #0f172a);
-    }
-
-    .exam-date {
-      font-size: 0.8rem;
-      color: var(--text-muted, #64748b);
-      background: #f1f5f9;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .exam-details {
-      font-size: 0.9rem;
-      color: var(--text-muted, #475569);
-      margin-bottom: 1.5rem;
-      line-height: 1.5;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
+    .badge-target {
+      align-self: flex-start;
+      padding: 4px 10px;
+      border-radius: 12px;
       font-size: 0.75rem;
       font-weight: 700;
+      margin-bottom: 12px;
       text-transform: uppercase;
-      margin-bottom: 1rem;
     }
 
-    .status-available {
-      background: #dcfce7;
-      color: #166534;
+    .badge-alunos {
+      background-color: #d1fae5;
+      color: #065f46;
     }
 
-    .status-pending {
-      background: #fef9c3;
-      color: #854d0e;
+    .badge-professores {
+      background-color: #fef3c7;
+      color: #92400e;
     }
 
-    .btn-download {
-      display: block;
-      text-align: center;
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--primary, #2563eb);
-      background: #eff6ff;
-      color: var(--primary, #2563eb);
+    .badge-ambos {
+      background-color: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .gabarito-title {
+      font-size: 1.1rem;
       font-weight: 600;
-      border-radius: var(--radius-md, 8px);
-      text-decoration: none;
+      margin-bottom: 8px;
+    }
+
+    .gabarito-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
       transition: all 0.2s;
     }
 
-    .btn-download:hover {
-      background: var(--primary, #2563eb);
+    .btn-action:hover {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+    }
+
+    .btn-delete {
+      background-color: #fef2f2;
+      color: var(--danger-color);
+      border-color: #fecaca;
+    }
+
+    .btn-delete:hover {
+      background-color: var(--danger-color);
       color: #ffffff;
     }
 
-    .btn-download.disabled {
-      background: #f1f5f9;
-      border-color: #cbd5e1;
-      color: #94a3b8;
-      cursor: not-allowed;
+    /* Modal de Visualização do Gabarito */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
     }
 
-    .btn-download.disabled:hover {
-      background: #f1f5f9;
-      color: #94a3b8;
+    .modal-content {
+      background: var(--card-bg);
+      padding: 28px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .modal-body {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      background: var(--bg-color);
+      padding: 16px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+      }
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="portal-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">Goulart<span>Educa</span></div>
-      <nav>
-        <a href="dashboard.html">Hub Central</a>
-        <a href="escola.html">A Escola</a>
-        <a href="boletim.html">Desempenho Académico</a>
-        <a href="avisos.html">Comunicados</a>
-        <a href="calendarios.html">Calendário Académico</a>
-        <a href="horarios.html">Grade de Horários</a>
-        <a href="gabaritos.html" class="active">Avaliações e Gabaritos</a>
-        <a href="contato.html">Fale Connosco</a>
-      </nav>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <header class="header">
-        <div class="header-title">
-          <h2>Avaliações e Gabaritos</h2>
-        </div>
-        <div class="user-profile">
-          <div class="user-info">
-            <p id="userName" class="name">Carregando...</p>
-            <p id="userClass" class="role">Carregando...</p>
-          </div>
-          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
-        </div>
-      </header>
+  <!-- Menu Lateral -->
+  <aside class="sidebar">
+    <div class="brand-title">Plataforma Edu</div>
+    <nav>
+      <ul class="nav-list">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="escola.html" class="nav-link">Minha Escola</a></li>
+        <li><a href="gabaritos.html" class="nav-link active">Gabaritos</a></li>
+        <li><a href="cursos.html" class="nav-link">Meus Cursos</a></li>
+        <li><a href="exercicios.html" class="nav-link">Exercícios</a></li>
+        <li><a href="desempenho.html" class="nav-link">Desempenho</a></li>
+        <li><a href="perfil.html" class="nav-link">Meu Perfil</a></li>
+        <li><a href="configuracoes.html" class="nav-link">Configurações</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-      <!-- Barra de Filtros -->
-      <div class="filter-bar">
-        <div class="filter-group">
-          <label for="trimestre">Trimestre</label>
-          <select id="trimestre">
-            <option value="todos">Todos os Trimestres</option>
-            <option value="3">3º Trimestre (Atual)</option>
-            <option value="2">2º Trimestre</option>
-            <option value="1">1º Trimestre</option>
-          </select>
-        </div>
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
 
-        <div class="filter-group">
-          <label for="disciplina">Disciplina</label>
-          <select id="disciplina">
-            <option value="todas">Todas as Disciplinas</option>
-            <option value="matematica">Matemática</option>
-            <option value="fisica">Física</option>
-            <option value="biologia">Biologia</option>
-            <option value="historia">História</option>
-          </select>
-        </div>
-
-        <button class="btn-filter">Filtrar Resultados</button>
+    <!-- Cabeçalho & Comutador de Perfil -->
+    <header class="page-header">
+      <div>
+        <h1>Central de Gabaritos</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Consulte e faça gestão de gabaritos oficiais de exames e atividades.</p>
       </div>
 
-      <!-- Lista de Avaliações -->
-      <div class="exams-grid">
-        
-        <!-- Cartão 1: Gabarito Disponível -->
-        <div class="exam-card">
-          <div>
-            <div class="exam-header">
-              <span class="exam-subject">Matemática</span>
-              <span class="exam-date">10 Out 2026</span>
-            </div>
-            <span class="status-badge status-available">Gabarito Disponível</span>
-            <p class="exam-details">Prova Bimestral de Matemática<br>Assuntos: Funções e Trigonometria básica.</p>
-          </div>
-          <a href="#" class="btn-download" onclick="alert('Iniciando transferência do PDF...')">Ver Gabarito (PDF)</a>
-        </div>
-
-        <!-- Cartão 2: Gabarito Disponível -->
-        <div class="exam-card">
-          <div>
-            <div class="exam-header">
-              <span class="exam-subject">Física</span>
-              <span class="exam-date">12 Out 2026</span>
-            </div>
-            <span class="status-badge status-available">Gabarito Disponível</span>
-            <p class="exam-details">Prova Bimestral de Física<br>Assuntos: Cinemática e Leis de Newton.</p>
-          </div>
-          <a href="#" class="btn-download" onclick="alert('Iniciando transferência do PDF...')">Ver Gabarito (PDF)</a>
-        </div>
-
-        <!-- Cartão 3: Gabarito Pendente -->
-        <div class="exam-card">
-          <div>
-            <div class="exam-header">
-              <span class="exam-subject">Biologia</span>
-              <span class="exam-date">25 Out 2026</span>
-            </div>
-            <span class="status-badge status-pending">Em Correção</span>
-            <p class="exam-details">Prova Bimestral de Biologia<br>Assuntos: Citologia e Genética.</p>
-          </div>
-          <a href="#" class="btn-download disabled" onclick="event.preventDefault()">Gabarito Indisponível</a>
-        </div>
-
+      <!-- Seletor de Perfil Ativo -->
+      <div class="role-selector-card">
+        <label for="user-role-select">Perfil de Acesso:</label>
+        <select id="user-role-select" class="role-select">
+          <option value="aluno">Aluno</option>
+          <option value="professor">Professor</option>
+          <option value="gestor">Gestor / Administração</option>
+        </select>
       </div>
+    </header>
 
-    </main>
+    <!-- Painel Exclusivo de Gestão (Disponível apenas para Perfil Gestor) -->
+    <section id="gestor-panel" class="gestor-section">
+      <h2>📌 Publicar Novo Gabarito (Área do Gestor)</h2>
+      <form id="add-gabarito-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="gab-title">Título da Prova / Avaliação</label>
+            <input type="text" id="gab-title" class="form-control" placeholder="Ex: Prova Mensal de Matemática" required>
+          </div>
+
+          <div class="form-group">
+            <label for="gab-subject">Disciplina</label>
+            <select id="gab-subject" class="form-control" required>
+              <option value="">Selecione...</option>
+              <option value="Matemática">Matemática</option>
+              <option value="Desenvolvimento Web">Desenvolvimento Web</option>
+              <option value="Banco de Dados">Banco de Dados</option>
+              <option value="Física">Física</option>
+              <option value="Português">Português</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="gab-target">Visibilidade (Público-Alvo)</label>
+            <select id="gab-target" class="form-control" required>
+              <option value="ambos">Alunos e Professores</option>
+              <option value="professores">Exclusivo Professores (Em Correção)</option>
+              <option value="alunos">Apenas Alunos</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="gab-date">Data de Aplicação</label>
+            <input type="date" id="gab-date" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label for="gab-answers">Gabarito / Respostas Esperadas</label>
+          <textarea id="gab-answers" class="form-control" rows="3" placeholder="Ex: 1-A, 2-C, 3-D, 4-B. Resposta dissertativa da Q5: ..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">+ Publicar Gabarito</button>
+      </form>
+    </section>
+
+    <!-- Filtros de Pesquisa -->
+    <section class="filters-bar">
+      <input type="text" id="search-gabarito" class="search-input" placeholder="Pesquisar por título de prova ou disciplina...">
+      
+      <select id="filter-subject" class="filter-select">
+        <option value="all">Todas as Disciplinas</option>
+        <option value="Matemática">Matemática</option>
+        <option value="Desenvolvimento Web">Desenvolvimento Web</option>
+        <option value="Banco de Dados">Banco de Dados</option>
+        <option value="Física">Física</option>
+      </select>
+    </section>
+
+    <!-- Grelha de Gabaritos -->
+    <section id="gabaritos-container" class="gabaritos-grid">
+      <!-- Ficheiros inseridos dinamicamente via JS -->
+    </section>
+
+  </main>
+
+  <!-- Modal de Pré-visualização do Gabarito -->
+  <div id="gabarito-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Gabarito da Prova</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-body">
+        <!-- Conteúdo do gabarito -->
+      </div>
+      <button class="btn-submit" style="width: 100%;" onclick="closeModal()">Fechar</button>
+    </div>
   </div>
 
-  <script src="js/auth.js"></script>
-  <script>
-    if(typeof Auth !== 'undefined') {
-      Auth.requireAuth();
-      Auth.loadProfile();
-    }
-  </script>
+  <script src="gabaritos.js"></script>
 </body>
 </html>

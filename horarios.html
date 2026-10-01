@@ -1,471 +1,509 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grade de Horários - Portal Goulart Educa</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Grade de Horários - Plataforma Edu</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    /* Estilos Específicos para a Página de Horários */
-    .schedule-toolbar {
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --highlight-bg: #e0e7ff;
+      --highlight-border: #818cf8;
+      --danger-color: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background-color: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 12px 16px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--primary-color);
+      color: #ffffff;
+    }
+
+    /* Conteúdo Principal */
+    .main-content {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    /* Cabeçalho e Troca de Perfil */
+    .page-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
-      background: var(--card-bg, #ffffff);
-      padding: 1.25rem 1.5rem;
-      border-radius: var(--radius-lg, 12px);
-      border: 1px solid var(--border-color, #e2e8f0);
-      margin-bottom: 1.5rem;
-      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
-    .class-info {
+    .page-header h1 {
+      font-size: 1.75rem;
+      color: var(--text-main);
+    }
+
+    .role-selector-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 12px 20px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 12px;
     }
 
-    .class-badge {
-      background: #eff6ff;
-      color: var(--primary, #2563eb);
-      font-weight: 700;
-      padding: 0.4rem 0.8rem;
-      border-radius: var(--radius-md, 8px);
+    .role-select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: #ffffff;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: pointer;
+    }
+
+    /* Barra de Controles e Filtros */
+    .controls-bar {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .filters-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .control-select {
+      padding: 8px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       font-size: 0.9rem;
-      border: 1px solid #bfdbfe;
+      background-color: #ffffff;
     }
 
-    .btn-action {
-      background: var(--primary, #2563eb);
+    .btn-add {
+      background-color: var(--primary-color);
       color: #ffffff;
-      padding: 0.6rem 1.2rem;
+      padding: 10px 18px;
       border: none;
-      border-radius: var(--radius-md, 8px);
+      border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
+      display: none; /* Exibido apenas para o Gestor */
       transition: background 0.2s;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
     }
 
-    .btn-action:hover {
-      background: var(--primary-dark, #1d4ed8);
+    .btn-add:hover {
+      background-color: var(--primary-hover);
     }
 
     /* Tabela de Horários */
     .table-container {
-      background: var(--card-bg, #ffffff);
-      border: 1px solid var(--border-color, #e2e8f0);
-      border-radius: var(--radius-lg, 12px);
-      box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.05));
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
       overflow-x: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
     .schedule-table {
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
       min-width: 750px;
     }
 
-    .schedule-table th {
-      background: #f8fafc;
-      color: var(--text-color, #0f172a);
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 1rem;
-      border-bottom: 2px solid var(--border-color, #e2e8f0);
+    .schedule-table th, .schedule-table td {
+      border: 1px solid var(--border-color);
+      padding: 14px;
       text-align: center;
-    }
-
-    .schedule-table th:first-child {
-      text-align: left;
-      width: 130px;
-    }
-
-    .schedule-table td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--border-color, #e2e8f0);
       vertical-align: top;
-      height: 90px;
     }
 
-    .time-slot {
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--text-muted, #475569);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
-    }
-
-    .time-slot .slot-num {
-      color: var(--primary, #2563eb);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-    }
-
-    /* Cartão de Disciplina dentro da Célula */
-    .subject-box {
-      background: #f8fafc;
-      border-left: 4px solid var(--primary, #2563eb);
-      padding: 0.6rem 0.75rem;
-      border-radius: 6px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .subject-box:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.08));
-    }
-
-    .subject-title {
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--text-color, #0f172a);
-      margin-bottom: 0.2rem;
-    }
-
-    .subject-teacher {
-      font-size: 0.78rem;
-      color: var(--text-muted, #64748b);
-    }
-
-    .subject-room {
-      font-size: 0.72rem;
-      color: #059669;
+    .schedule-table th {
+      background-color: var(--bg-color);
+      color: var(--text-main);
       font-weight: 600;
-      margin-top: 0.25rem;
+      font-size: 0.9rem;
     }
 
-    /* Variação de Cores por Área */
-    .subject-box.exatas { border-left-color: #2563eb; }
-    .subject-box.humanas { border-left-color: #d97706; }
-    .subject-box.biologicas { border-left-color: #10b981; }
-    .subject-box.linguagens { border-left-color: #8b5cf6; }
-
-    /* Intervalo / Recreio */
-    .break-row td {
-      background: #f1f5f9;
-      height: 45px;
-      text-align: center;
-      font-weight: 700;
+    .time-col {
+      width: 120px;
+      background-color: var(--bg-color);
+      font-weight: 600;
       font-size: 0.85rem;
-      color: var(--text-muted, #64748b);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      vertical-align: middle !important;
+    }
+
+    /* Cards dentro da Célula de Horário */
+    .slot-card {
+      background-color: var(--highlight-bg);
+      border: 1px solid var(--highlight-border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: left;
+      position: relative;
+      font-size: 0.85rem;
+    }
+
+    .slot-title {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 4px;
+    }
+
+    .slot-detail {
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .slot-room {
+      display: inline-block;
+      margin-top: 4px;
+      background: #ffffff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .slot-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .btn-slot-edit, .btn-slot-del {
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-slot-edit {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .btn-slot-del {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .empty-slot {
+      color: #cbd5e1;
+      font-size: 0.8rem;
+      font-style: italic;
+      padding: 10px 0;
+    }
+
+    /* Modal Form para Gestor */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 28px;
+      border-radius: 12px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: var(--primary-color);
+      color: #ffffff;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="portal-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">Goulart<span>Educa</span></div>
-      <nav>
-        <a href="dashboard.html">Hub Central</a>
-        <a href="escola.html">A Escola</a>
-        <a href="boletim.html">Desempenho Académico</a>
-        <a href="avisos.html">Comunicados</a>
-        <a href="calendarios.html">Calendário Académico</a>
-        <a href="horarios.html" class="active">Grade de Horários</a>
-        <a href="gabaritos.html">Avaliações e Gabaritos</a>
-        <a href="contato.html">Fale Connosco</a>
-      </nav>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <header class="header">
-        <div class="header-title">
-          <h2>Grade de Horários</h2>
-        </div>
-        <div class="user-profile">
-          <div class="user-info">
-            <p id="userName" class="name">Carregando...</p>
-            <p id="userClass" class="role">Carregando...</p>
-          </div>
-          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
-        </div>
-      </header>
+  <!-- Menu Lateral -->
+  <aside class="sidebar">
+    <div class="brand-title">Plataforma Edu</div>
+    <nav>
+      <ul class="nav-list">
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="escola.html" class="nav-link">Minha Escola</a></li>
+        <li><a href="gabaritos.html" class="nav-link">Gabaritos</a></li>
+        <li><a href="horarios.html" class="nav-link active">Horários</a></li>
+        <li><a href="cursos.html" class="nav-link">Meus Cursos</a></li>
+        <li><a href="exercicios.html" class="nav-link">Exercícios</a></li>
+        <li><a href="desempenho.html" class="nav-link">Desempenho</a></li>
+        <li><a href="perfil.html" class="nav-link">Meu Perfil</a></li>
+        <li><a href="configuracoes.html" class="nav-link">Configurações</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-      <!-- Barra de Ações / Filtro -->
-      <div class="schedule-toolbar">
-        <div class="class-info">
-          <span class="class-badge">3º Ano - Ensino Médio (Turma A)</span>
-          <span style="font-size: 0.85rem; color: #64748b;">Turno: Manhã</span>
-        </div>
-        <button class="btn-action" onclick="window.print()">
-          Imprimir / Guardar PDF
-        </button>
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+
+    <!-- Cabeçalho & Seleção de Perfil -->
+    <header class="page-header">
+      <div>
+        <h1>Grade de Horários</h1>
+        <p id="page-subtitle" style="color: var(--text-muted); font-size: 0.9rem;">Consulte ensaios, aulas e salas reservadas para a semana.</p>
       </div>
 
-      <!-- Tabela Semanal de Horários -->
-      <div class="table-container">
-        <table class="schedule-table">
-          <thead>
-            <tr>
-              <th>Horário</th>
-              <th>Segunda-feira</th>
-              <th>Terça-feira</th>
-              <th>Quarta-feira</th>
-              <th>Quinta-feira</th>
-              <th>Sexta-feira</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- 1ª Aula -->
-            <tr>
-              <td>
-                <div class="time-slot">
-                  <span class="slot-num">1ª Aula</span>
-                  07:30 - 08:20
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Matemática</div>
-                    <div class="subject-teacher">Prof. Carlos Silva</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box biologicas">
-                  <div>
-                    <div class="subject-title">Biologia</div>
-                    <div class="subject-teacher">Profa. Mariana Costa</div>
-                  </div>
-                  <div class="subject-room">Lab 02</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box linguagens">
-                  <div>
-                    <div class="subject-title">Português</div>
-                    <div class="subject-teacher">Profa. Ana Lima</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Física</div>
-                    <div class="subject-teacher">Prof. Roberto Dias</div>
-                  </div>
-                  <div class="subject-room">Lab 01</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box humanas">
-                  <div>
-                    <div class="subject-title">História</div>
-                    <div class="subject-teacher">Prof. Fernando Rocha</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-            </tr>
+      <div class="role-selector-card">
+        <label for="user-role-select" style="font-weight: 600; font-size: 0.875rem; color: var(--text-muted);">Perfil:</label>
+        <select id="user-role-select" class="role-select">
+          <option value="aluno">Aluno</option>
+          <option value="professor">Professor</option>
+          <option value="gestor">Gestor / Administração</option>
+        </select>
+      </div>
+    </header>
 
-            <!-- 2ª Aula -->
-            <tr>
-              <td>
-                <div class="time-slot">
-                  <span class="slot-num">2ª Aula</span>
-                  08:20 - 09:10
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Matemática</div>
-                    <div class="subject-teacher">Prof. Carlos Silva</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Química</div>
-                    <div class="subject-teacher">Profa. Juliana Paes</div>
-                  </div>
-                  <div class="subject-room">Lab 03</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box linguagens">
-                  <div>
-                    <div class="subject-title">Inglês</div>
-                    <div class="subject-teacher">Prof. John Miller</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Física</div>
-                    <div class="subject-teacher">Prof. Roberto Dias</div>
-                  </div>
-                  <div class="subject-room">Lab 01</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box humanas">
-                  <div>
-                    <div class="subject-title">Geografia</div>
-                    <div class="subject-teacher">Profa. Camila Alves</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-            </tr>
+    <!-- Controles de Filtro e Ações de Gestor -->
+    <section class="controls-bar">
+      <div class="filters-group">
+        
+        <!-- Filtro por Turma (Aluno/Gestor) -->
+        <div id="filter-turma-wrapper">
+          <span class="filter-label">Turma:</span>
+          <select id="filter-turma" class="control-select">
+            <option value="3º Ano - B">3º Ano - B</option>
+            <option value="2º Ano - A">2º Ano - A</option>
+            <option value="1º Ano - C">1º Ano - C</option>
+          </select>
+        </div>
 
-            <!-- Intervalo -->
-            <tr class="break-row">
-              <td>
-                <div class="time-slot" style="color: #64748b;">
-                  09:10 - 09:30
-                </div>
-              </td>
-              <td colspan="5">Intervalo / Recreio</td>
-            </tr>
+        <!-- Filtro por Professor (Professor/Gestor) -->
+        <div id="filter-professor-wrapper" style="display: none;">
+          <span class="filter-label">Professor(a):</span>
+          <select id="filter-professor" class="control-select">
+            <option value="Prof. Roberto Carlos">Prof. Roberto Carlos</option>
+            <option value="Profa. Ana Maria">Profa. Ana Maria</option>
+            <option value="Prof. Carlos Lima">Prof. Carlos Lima</option>
+          </select>
+        </div>
 
-            <!-- 3ª Aula -->
-            <tr>
-              <td>
-                <div class="time-slot">
-                  <span class="slot-num">3ª Aula</span>
-                  09:30 - 10:20
-                </div>
-              </td>
-              <td>
-                <div class="subject-box humanas">
-                  <div>
-                    <div class="subject-title">Filosofia</div>
-                    <div class="subject-teacher">Prof. Marcelo Neves</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Química</div>
-                    <div class="subject-teacher">Profa. Juliana Paes</div>
-                  </div>
-                  <div class="subject-room">Lab 03</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box linguagens">
-                  <div>
-                    <div class="subject-title">Redação</div>
-                    <div class="subject-teacher">Profa. Ana Lima</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box biologicas">
-                  <div>
-                    <div class="subject-title">Ed. Física</div>
-                    <div class="subject-teacher">Prof. Paulo Ramos</div>
-                  </div>
-                  <div class="subject-room">Ginásio</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box linguagens">
-                  <div>
-                    <div class="subject-title">Literatura</div>
-                    <div class="subject-teacher">Profa. Beatriz Castro</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-            </tr>
-
-            <!-- 4ª Aula -->
-            <tr>
-              <td>
-                <div class="time-slot">
-                  <span class="slot-num">4ª Aula</span>
-                  10:20 - 11:10
-                </div>
-              </td>
-              <td>
-                <div class="subject-box linguagens">
-                  <div>
-                    <div class="subject-title">Artes</div>
-                    <div class="subject-teacher">Profa. Clara Nunes</div>
-                  </div>
-                  <div class="subject-room">Ateliê</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box humanas">
-                  <div>
-                    <div class="subject-title">Sociologia</div>
-                    <div class="subject-teacher">Prof. Marcelo Neves</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Matemática</div>
-                    <div class="subject-teacher">Prof. Carlos Silva</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box biologicas">
-                  <div>
-                    <div class="subject-title">Biologia</div>
-                    <div class="subject-teacher">Profa. Mariana Costa</div>
-                  </div>
-                  <div class="subject-room">Sala 204</div>
-                </div>
-              </td>
-              <td>
-                <div class="subject-box exatas">
-                  <div>
-                    <div class="subject-title">Oficina de Robótica</div>
-                    <div class="subject-teacher">Prof. Igor Santos</div>
-                  </div>
-                  <div class="subject-room">Lab Maker</div>
-                </div>
-              </td>
-            </tr>
-
-          </tbody>
-        </table>
       </div>
 
-    </main>
+      <!-- Botão do Gestor para adicionar aula -->
+      <button id="btn-add-schedule" class="btn-add" onclick="openModal()">+ Adicionar Horário</button>
+    </section>
+
+    <!-- Tabela Semanal de Horários -->
+    <section class="table-container">
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th class="time-col">Horário</th>
+            <th>Segunda-feira</th>
+            <th>Terça-feira</th>
+            <th>Quarta-feira</th>
+            <th>Quinta-feira</th>
+            <th>Sexta-feira</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body">
+          <!-- Linhas renderizadas via JS -->
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- Modal de Adicionar/Editar Horário (Apenas Gestor) -->
+  <div id="schedule-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Cadastrar Novo Horário</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+
+      <form id="schedule-form">
+        <input type="hidden" id="edit-id">
+
+        <div class="form-group">
+          <label for="form-day">Dia da Semana</label>
+          <select id="form-day" class="form-control" required>
+            <option value="Segunda-feira">Segunda-feira</option>
+            <option value="Terça-feira">Terça-feira</option>
+            <option value="Quarta-feira">Quarta-feira</option>
+            <option value="Quinta-feira">Quinta-feira</option>
+            <option value="Sexta-feira">Sexta-feira</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="form-time">Faixa Horária</label>
+          <select id="form-time" class="form-control" required>
+            <option value="07:30 - 08:20">07:30 - 08:20</option>
+            <option value="08:20 - 09:10">08:20 - 09:10</option>
+            <option value="09:30 - 10:20">09:30 - 10:20</option>
+            <option value="10:20 - 11:10">10:20 - 11:10</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="form-turma">Turma</label>
+          <select id="form-turma" class="form-control" required>
+            <option value="3º Ano - B">3º Ano - B</option>
+            <option value="2º Ano - A">2º Ano - A</option>
+            <option value="1º Ano - C">1º Ano - C</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="form-subject">Disciplina</label>
+          <input type="text" id="form-subject" class="form-control" placeholder="Ex: Algoritmos e Estruturas" required>
+        </div>
+
+        <div class="form-group">
+          <label for="form-professor">Professor(a)</label>
+          <select id="form-professor" class="form-control" required>
+            <option value="Prof. Roberto Carlos">Prof. Roberto Carlos</option>
+            <option value="Profa. Ana Maria">Profa. Ana Maria</option>
+            <option value="Prof. Carlos Lima">Prof. Carlos Lima</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="form-room">Sala / Laboratório</label>
+          <input type="text" id="form-room" class="form-control" placeholder="Ex: Lab 03 - Térreo" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Salvar Horário</button>
+      </form>
+    </div>
   </div>
 
-  <script src="js/auth.js"></script>
-  <script>
-    if(typeof Auth !== 'undefined') {
-      Auth.requireAuth();
-      Auth.loadProfile();
-    }
-  </script>
+  <script src="horarios.js"></script>
 </body>
 </html>

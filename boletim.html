@@ -3,245 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Boletim - Portal Goulart Educa</title>
+  <title>Boletim & Notas - Portal Goulart Educa</title>
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* Estilos Específicos do Boletim */
-    .boletim-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .period-selector select {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      background: var(--card-bg);
-      font-weight: 600;
-      color: var(--text-color);
-      outline: none;
-      cursor: pointer;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .stat-card {
-      background: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .stat-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-    .stat-value { font-size: 2rem; font-weight: 800; }
-    .stat-value.success { color: #10b981; }
-    .stat-value.warning { color: #f59e0b; }
-    .stat-value.danger { color: #ef4444; }
-
-    .table-container {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      overflow-x: auto; /* Garante responsividade horizontal */
-      box-shadow: var(--shadow-sm);
-    }
-
-    .grades-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: center;
-      min-width: 800px;
-    }
-
-    .grades-table th {
-      background: #f8fafc;
-      padding: 1rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      border-bottom: 2px solid var(--border-color);
-    }
-
-    .grades-table td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 0.95rem;
-      color: var(--text-color);
-    }
-
-    .grades-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .grades-table tr:hover td {
-      background: #f1f5f9;
-    }
-
-    .subject-name {
-      text-align: left !important;
-      font-weight: 600;
-    }
-
-    .grade {
-      font-weight: bold;
-    }
-
-    .grade.low { color: #ef4444; }
-    .grade.high { color: #10b981; }
-
-    .status-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-
-    .status-aprovado { background: #d1fae5; color: #047857; }
-    .status-cursando { background: #e0f2fe; color: #0369a1; }
-    .status-recuperacao { background: #ffedd5; color: #c2410c; }
-  </style>
+  <!-- Supabase SDK e Scripts Globais -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
 </head>
 <body>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <div class="portal-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">Goulart<span>Educa</span></div>
+    <!-- MENU LATERAL (SIDEBAR) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Goulart <span>Educa</span></div>
       <nav>
-        <a href="dashboard.html">Hub Central</a>
-        <a href="boletim.html" class="active">Desempenho Acadêmico</a>
-        <a href="avisos.html">Comunicados</a>
-        <a href="horarios.html">Grade de Horários</a>
-        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="calendarios.html">📅 Calendário</a>
+        <a href="avisos.html">📢 Mural de Avisos</a>
+        <a href="boletim.html" class="active">📝 Boletim & Notas</a>
       </nav>
     </aside>
 
-    <!-- Main Content -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="main-content">
+      <!-- CABEÇALHO -->
       <header class="header">
-        <div class="header-title">
-          <h2>Boletim Escolar</h2>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <button class="header-toggle-btn" onclick="toggleSidebar()">☰</button>
+          <div class="header-title">
+            <h2>📝 Gestão de Notas & Boletim Acadêmico</h2>
+          </div>
         </div>
+
         <div class="user-profile">
           <div class="user-info">
-            <p id="userName" class="name">Carregando...</p>
-            <p id="userClass" class="role">Carregando...</p>
+            <p class="name" id="user-display-name">Carregando...</p>
+            <p class="role" id="user-display-role">...</p>
           </div>
-          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+          <button class="btn-logout" onclick="logout()">Sair</button>
         </div>
       </header>
 
-      <!-- Controles Superiores -->
-      <div class="boletim-header">
-        <div>
-          <p style="color: var(--text-muted); font-size: 0.9rem;">Consulte as suas notas e faltas do período letivo atual.</p>
+      <!-- SEÇÃO 1: VISÃO DO ALUNO (Visualização Individual de Notas) -->
+      <section id="view-aluno" style="display: none;">
+        <div class="stats-grid" style="margin-bottom: 1.5rem;">
+          <div class="stat-card">
+            <h4>Média Geral do Aluno</h4>
+            <div class="value" id="aluno-media-geral">--</div>
+          </div>
+          <div class="stat-card">
+            <h4>Situação Geral</h4>
+            <div class="value" id="aluno-situacao-geral" style="font-size: 1.25rem;">--</div>
+          </div>
+          <div class="stat-card">
+            <h4>Disciplinas Cursadas</h4>
+            <div class="value" id="aluno-total-disciplinas">0</div>
+          </div>
         </div>
-        <div class="period-selector">
-          <select>
-            <option value="2026">Ano Letivo 2026</option>
-            <option value="2025">Ano Letivo 2025</option>
-          </select>
-        </div>
-      </div>
 
-      <!-- Métricas Resumo -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-title">Coeficiente de Rendimento</span>
-          <span class="stat-value success">8.75</span>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📖 Meu Boletim Escolar</h3>
+          </div>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-color); background: #f8fafc;">
+                  <th style="padding: 0.75rem 1rem;">Disciplina</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">1º Bimestre</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">2º Bimestre</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">3º Bimestre</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">4º Bimestre</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">Média Final</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="aluno-tabela-notas">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Carregando o seu boletim...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="stat-card">
-          <span class="stat-title">Faltas Acumuladas</span>
-          <span class="stat-value">12</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-title">Disciplinas em Alerta</span>
-          <span class="stat-value warning">1</span>
-        </div>
-      </div>
+      </section>
 
-      <!-- Tabela de Notas -->
-      <div class="table-container">
-        <table class="grades-table">
-          <thead>
-            <tr>
-              <th class="subject-name">Disciplina</th>
-              <th>1º Bimestre</th>
-              <th>2º Bimestre</th>
-              <th>3º Bimestre</th>
-              <th>4º Bimestre</th>
-              <th>Média Atual</th>
-              <th>Faltas</th>
-              <th>Situação</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="subject-name">Matemática Aplicada</td>
-              <td class="grade high">9.5</td>
-              <td class="grade high">8.8</td>
-              <td class="grade">-</td>
-              <td class="grade">-</td>
-              <td class="grade high">9.1</td>
-              <td>2</td>
-              <td><span class="status-badge status-cursando">Cursando</span></td>
-            </tr>
-            <tr>
-              <td class="subject-name">Física Quântica Base</td>
-              <td class="grade">7.0</td>
-              <td class="grade low">5.5</td>
-              <td class="grade">-</td>
-              <td class="grade">-</td>
-              <td class="grade low">6.2</td>
-              <td>4</td>
-              <td><span class="status-badge status-recuperacao">Atenção</span></td>
-            </tr>
-            <tr>
-              <td class="subject-name">Literatura Contemporânea</td>
-              <td class="grade high">10.0</td>
-              <td class="grade high">9.5</td>
-              <td class="grade">-</td>
-              <td class="grade">-</td>
-              <td class="grade high">9.7</td>
-              <td>0</td>
-              <td><span class="status-badge status-cursando">Cursando</span></td>
-            </tr>
-            <tr>
-              <td class="subject-name">Biologia Celular</td>
-              <td class="grade">8.0</td>
-              <td class="grade">8.5</td>
-              <td class="grade">-</td>
-              <td class="grade">-</td>
-              <td class="grade">8.2</td>
-              <td>6</td>
-              <td><span class="status-badge status-cursando">Cursando</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- SEÇÃO 2: VISÃO DO PROFESSOR (Lançamento e Edição de Notas) -->
+      <section id="view-professor" style="display: none;">
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div class="card-header">
+            <h3 class="card-title">✏️ Lançamento de Notas da Turma</h3>
+          </div>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+            <div style="flex: 1; min-width: 200px;" class="form-group">
+              <label for="select-prof-turma">Selecione a Turma:</label>
+              <select id="select-prof-turma" class="form-control" onchange="carregarAlunosProf()">
+                <option value="">Carregando turmas...</option>
+              </select>
+            </div>
+            <div style="flex: 1; min-width: 200px;" class="form-group">
+              <label for="select-prof-disciplina">Selecione a Disciplina:</label>
+              <select id="select-prof-disciplina" class="form-control" onchange="carregarAlunosProf()">
+                <option value="">Carregando disciplinas...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary" onclick="salvarNotasProf()" id="btn-salvar-notas">
+                💾 Salvar Alterações
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-color); background: #f8fafc;">
+                  <th style="padding: 0.75rem 1rem;">Aluno</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center; width: 100px;">N1</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center; width: 100px;">N2</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center; width: 100px;">N3</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center; width: 100px;">N4</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center; width: 110px;">Média</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center; width: 140px;">Situação</th>
+                </tr>
+              </thead>
+              <tbody id="prof-tabela-alunos">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Selecione uma turma e disciplina para exibir os alunos.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO 3: VISÃO DA COORDENAÇÃO (Acompanhamento e Média de Turmas) -->
+      <section id="view-coordenacao" style="display: none;">
+        <div class="stats-grid" style="margin-bottom: 1.5rem;">
+          <div class="stat-card">
+            <h4>Média Geral da Escola</h4>
+            <div class="value" id="coord-media-geral">--</div>
+          </div>
+          <div class="stat-card">
+            <h4>Taxa de Aprovação Global</h4>
+            <div class="value" id="coord-taxa-aprovacao">--%</div>
+          </div>
+          <div class="stat-card">
+            <h4>Alunos em Atenção / Risco</h4>
+            <div class="value" id="coord-total-risco" style="color: var(--danger, #ef4444);">0</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <h3 class="card-title">📊 Acompanhamento das Médias por Turma</h3>
+            <input type="text" id="search-coord-turma" class="form-control" placeholder="Buscar por turma, professor ou disciplina..." style="max-width: 320px;" oninput="filtrarCoordTabela()">
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-color); background: #f8fafc;">
+                  <th style="padding: 0.75rem 1rem;">Turma</th>
+                  <th style="padding: 0.75rem 1rem;">Disciplina</th>
+                  <th style="padding: 0.75rem 1rem;">Professor Responsável</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">Média da Turma</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">% Aprovação</th>
+                  <th style="padding: 0.75rem 1rem; text-align: center;">Alunos em Risco</th>
+                </tr>
+              </thead>
+              <tbody id="coord-tabela-medias">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Processando consolidação das turmas...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
     </main>
   </div>
 
-  <script src="js/auth.js"></script>
+  <!-- SCRIPT DE REGRA DE NEGÓCIO DO BOLETIM -->
+  <script src="js/boletim.js"></script>
+
   <script>
-    // Validação de segurança e carregamento de dados do usuário
-    Auth.requireAuth();
-    Auth.loadProfile();
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
   </script>
 </body>
 </html>

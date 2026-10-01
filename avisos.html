@@ -3,324 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comunicados - Portal Goulart Educa</title>
+  <title>Mural de Avisos - Portal Goulart Educa</title>
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* Estilos Específicos para a Página de Avisos */
-    .avisos-header-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .search-bar {
-      flex: 1;
-      min-width: 250px;
-      position: relative;
-    }
-
-    .search-bar input {
-      width: 100%;
-      padding: 0.75rem 1rem 0.75rem 2.5rem;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 0.95rem;
-      background: var(--card-bg);
-      outline: none;
-      transition: var(--transition);
-    }
-
-    .search-bar input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .search-bar::before {
-      content: '🔍';
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1rem;
-      color: var(--text-muted);
-    }
-
-    .filter-chips {
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .chip {
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      background: var(--card-bg);
-      color: var(--text-muted);
-      transition: var(--transition);
-    }
-
-    .chip.active, .chip:hover {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    .avisos-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .aviso-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      transition: var(--transition);
-    }
-
-    .aviso-card:hover {
-      border-color: var(--primary-light);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .aviso-header {
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .aviso-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .aviso-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #f1f5f9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: var(--primary);
-      flex-shrink: 0;
-    }
-
-    .aviso-icon.urgent {
-      background: #fee2e2;
-      color: #ef4444;
-    }
-
-    .aviso-meta h4 {
-      font-size: 1.1rem;
-      margin-bottom: 0.25rem;
-      color: var(--text-color);
-    }
-
-    .aviso-meta p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .aviso-toggle {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      transition: transform 0.3s ease;
-    }
-
-    .aviso-card.open .aviso-toggle {
-      transform: rotate(180deg);
-    }
-
-    .aviso-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-      background: #f8fafc;
-      border-top: 1px solid transparent;
-    }
-
-    .aviso-card.open .aviso-body {
-      border-top-color: var(--border-color);
-    }
-
-    .aviso-content-inner {
-      padding: 1.5rem;
-      line-height: 1.6;
-      color: var(--text-color);
-      font-size: 0.95rem;
-    }
-
-    @media (max-width: 768px) {
-      .avisos-header-controls { flex-direction: column; align-items: stretch; }
-      .filter-chips { overflow-x: auto; padding-bottom: 0.5rem; }
-    }
-  </style>
+  <!-- Supabase SDK e Scripts Globais -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
 </head>
 <body>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
   <div class="portal-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">Goulart<span>Educa</span></div>
+    <!-- MENU LATERAL (SIDEBAR) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">Goulart <span>Educa</span></div>
       <nav>
-        <a href="dashboard.html">Hub Central</a>
-        <a href="boletim.html">Desempenho Acadêmico</a>
-        <a href="avisos.html" class="active">Comunicados</a>
-        <a href="horarios.html">Grade de Horários</a>
-        <a href="gabaritos.html">Avaliações e Gabaritos</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="calendarios.html">📅 Calendário</a>
+        <a href="avisos.html" class="active">📢 Mural de Avisos</a>
       </nav>
     </aside>
 
-    <!-- Main Content -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="main-content">
+      <!-- CABEÇALHO -->
       <header class="header">
-        <div class="header-title">
-          <h2>Quadro de Comunicados</h2>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <button class="header-toggle-btn" onclick="toggleSidebar()">☰</button>
+          <div class="header-title">
+            <h2>📢 Mural de Avisos & Comunicados</h2>
+          </div>
         </div>
+
         <div class="user-profile">
           <div class="user-info">
-            <p id="userName" class="name">Carregando...</p>
-            <p id="userClass" class="role">Carregando...</p>
+            <p class="name" id="user-display-name">Carregando...</p>
+            <p class="role" id="user-display-role">...</p>
           </div>
-          <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+          <button class="btn-logout" onclick="logout()">Sair</button>
         </div>
       </header>
 
-      <!-- Controles de Busca e Filtro -->
-      <div class="avisos-header-controls">
-        <div class="search-bar">
-          <input type="text" placeholder="Buscar avisos por título ou palavra-chave...">
-        </div>
-        <div class="filter-chips">
-          <button class="chip active">Todos</button>
-          <button class="chip">Urgentes</button>
-          <button class="chip">Coordenação</button>
-          <button class="chip">Eventos</button>
+      <!-- BARRA DE AÇÕES E FILTROS -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          
+          <!-- Filtros de Tag e Busca -->
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1;">
+            <input type="text" id="search-input" class="form-control" placeholder="Buscar aviso por título ou conteúdo..." style="max-width: 320px;" oninput="filtrarAvisos()">
+            
+            <select id="filter-tag" class="form-control" style="max-width: 180px;" onchange="filtrarAvisos()">
+              <option value="todos">Todas as Tags</option>
+              <option value="Urgente">🚨 Urgente</option>
+              <option value="Geral">📌 Geral</option>
+              <option value="Acadêmico">📚 Acadêmico</option>
+              <option value="Evento">🎉 Evento</option>
+            </select>
+          </div>
+
+          <!-- Botão de Novo Aviso (Exibido para Professor e Coordenação) -->
+          <button id="btn-novo-aviso" class="btn btn-primary" style="display: none;" onclick="abrirModalAviso()">
+            ➕ Novo Aviso
+          </button>
         </div>
       </div>
 
-      <!-- Lista de Avisos -->
-      <div class="avisos-list">
-        
-        <!-- Aviso 1 (Urgente) -->
-        <div class="aviso-card open">
-          <div class="aviso-header" onclick="toggleAviso(this)">
-            <div class="aviso-info">
-              <div class="aviso-icon urgent">!</div>
-              <div class="aviso-meta">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <h4>Atualização no Cronograma de Provas</h4>
-                  <span class="badge orange">Urgente</span>
-                </div>
-                <p>Enviado por: Coordenação • Hoje às 14:30</p>
-              </div>
-            </div>
-            <div class="aviso-toggle">▼</div>
-          </div>
-          <div class="aviso-body" style="max-height: 500px;">
-            <div class="aviso-content-inner">
-              <p>Prezados alunos e responsáveis,</p>
-              <br>
-              <p>Devido ao conselho de classe extraordinário, as avaliações do 3º Bimestre que ocorreriam na próxima quarta-feira (30/09) foram reagendadas para a sexta-feira (02/10). Os conteúdos cobrados permanecem inalterados.</p>
-              <br>
-              <p>Solicitamos que revisem a grade completa de horários no portal. Em caso de choque com atividades extracurriculares, procurem a secretaria até o final do dia de amanhã.</p>
-              <br>
-              <p>Atenciosamente,<br><strong>Coordenação Pedagógica</strong></p>
-            </div>
-          </div>
+      <!-- LISTA DE CARDS DE AVISOS -->
+      <div id="lista-avisos-container" class="grid-1">
+        <div class="card" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+          Carregando avisos do sistema...
         </div>
-
-        <!-- Aviso 2 -->
-        <div class="aviso-card">
-          <div class="aviso-header" onclick="toggleAviso(this)">
-            <div class="aviso-info">
-              <div class="aviso-icon">G</div>
-              <div class="aviso-meta">
-                <h4>Inscrições: Feira de Ciências 2026</h4>
-                <p>Enviado por: Direção • Ontem às 09:15</p>
-              </div>
-            </div>
-            <div class="aviso-toggle">▼</div>
-          </div>
-          <div class="aviso-body">
-            <div class="aviso-content-inner">
-              <p>Estão abertas as inscrições para os projetos interdisciplinares da Feira de Ciências de 2026!</p>
-              <br>
-              <p>Os grupos devem ter entre 3 e 5 alunos. Para registrar sua equipe, o líder do grupo deve acessar o formulário disponível na intranet da biblioteca escolar ou preencher a ficha presencialmente na secretaria até o dia 15 do próximo mês.</p>
-              <br>
-              <p>O tema deste ano é: <em>"Soluções Sustentáveis para o Espaço Urbano"</em>. Contamos com a criatividade de todos!</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Aviso 3 -->
-        <div class="aviso-card">
-          <div class="aviso-header" onclick="toggleAviso(this)">
-            <div class="aviso-info">
-              <div class="aviso-icon" style="background: #e0f2fe; color: #0284c7;">$</div>
-              <div class="aviso-meta">
-                <h4>Vencimento de Mensalidade</h4>
-                <p>Enviado por: Financeiro • 25 de Setembro</p>
-              </div>
-            </div>
-            <div class="aviso-toggle">▼</div>
-          </div>
-          <div class="aviso-body">
-            <div class="aviso-content-inner">
-              <p>Lembramos que o boleto referente à mensalidade de Outubro já está disponível para emissão no aplicativo oficial da escola e também foi enviado para o e-mail dos responsáveis financeiros cadastrados.</p>
-              <p>Evite multas e juros realizando o pagamento até a data de vencimento (dia 05).</p>
-            </div>
-          </div>
-        </div>
-
       </div>
     </main>
   </div>
 
-  <script src="js/auth.js"></script>
+  <!-- MODAL DE CRIAÇÃO / EDIÇÃO DE AVISO -->
+  <div id="modal-aviso" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center; padding: 1rem;">
+    <div class="card" style="width: 100%; max-width: 550px; background: #fff; max-height: 90vh; overflow-y: auto;">
+      <div class="card-header">
+        <h3 class="card-title" id="modal-title">Novo Comunicado</h3>
+        <button onclick="fecharModalAviso()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <form id="form-aviso" onsubmit="salvarAviso(event)">
+        <input type="hidden" id="aviso-id">
+
+        <div class="form-group">
+          <label for="aviso-titulo">Título do Aviso *</label>
+          <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Alteração na data da prova" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="aviso-tag">Tag / Categoria *</label>
+            <select id="aviso-tag" class="form-control" required>
+              <option value="Geral">📌 Geral</option>
+              <option value="Urgente">🚨 Urgente</option>
+              <option value="Acadêmico">📚 Acadêmico</option>
+              <option value="Evento">🎉 Evento</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="aviso-publico">Público-Alvo *</label>
+            <select id="aviso-publico" class="form-control" required>
+              <option value="todos">Todos (Alunos e Profs)</option>
+              <option value="alunos">Apenas Alunos</option>
+              <option value="professores">Apenas Professores</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="aviso-conteudo">Conteúdo da Mensagem *</label>
+          <textarea id="aviso-conteudo" class="form-control" rows="5" placeholder="Escreva os detalhes do aviso..." required></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button type="button" class="btn" style="background: #e2e8f0; color: var(--text-color);" onclick="fecharModalAviso()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-salvar-aviso">Publicar Aviso</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE REGRA DE NEGÓCIO DO MURAL -->
+  <script src="js/avisos.js"></script>
+
   <script>
-    // Validação de segurança e carregamento de dados
-    Auth.requireAuth();
-    Auth.loadProfile();
-
-    // Lógica de Expansão dos Avisos (Accordion)
-    function toggleAviso(element) {
-      const card = element.closest('.aviso-card');
-      const body = card.querySelector('.aviso-body');
-      
-      if (card.classList.contains('open')) {
-        // Fechar
-        body.style.maxHeight = '0px';
-        card.classList.remove('open');
-      } else {
-        // Abrir
-        const innerContent = body.querySelector('.aviso-content-inner');
-        body.style.maxHeight = innerContent.offsetHeight + 'px';
-        card.classList.add('open');
-      }
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
     }
-
-    // Inicializa a altura correta para o aviso que já vem aberto por padrão
-    window.addEventListener('DOMContentLoaded', () => {
-      const openCards = document.querySelectorAll('.aviso-card.open');
-      openCards.forEach(card => {
-        const body = card.querySelector('.aviso-body');
-        const innerContent = body.querySelector('.aviso-content-inner');
-        body.style.maxHeight = innerContent.offsetHeight + 'px';
-      });
-    });
   </script>
 </body>
 </html>

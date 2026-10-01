@@ -1,364 +1,315 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
-  <!-- SDK do Supabase via CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Cliente Supabase e Autenticação -->
-<script src="js/supabase.js"></script>
-<script src="js/auth.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Goulart Educa - Acesso ao Sistema</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Login - Plataforma Edu</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    /* Estilos Específicos para a Landing Page e Login (index.html) */
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --danger-color: #ef4444;
+      --success-color: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
-      background-color: var(--bg-body, #f8fafc);
-      color: var(--text-color, #0f172a);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 460px;
+      padding: 32px;
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin-bottom: 6px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Seletor de Perfil */
+    .role-selection-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .role-btn {
+      background-color: var(--bg-color);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      margin: 0;
-    }
-
-    .landing-header {
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-color, #e2e8f0);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 6px;
     }
 
-    .landing-header .brand {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--primary, #2563eb);
-      text-decoration: none;
+    .role-btn:hover {
+      border-color: #a5b4fc;
     }
 
-    .landing-header .brand span {
-      color: #0f172a;
+    .role-btn.active {
+      border-color: var(--primary-color);
+      background-color: #e0e7ff;
+      color: var(--primary-color);
     }
 
-    .hero-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 3rem;
-      align-items: center;
-      flex: 1;
-      width: 100%;
-      box-sizing: border-box;
+    .role-icon {
+      font-size: 1.4rem;
     }
 
-    @media (min-width: 992px) {
-      .hero-container {
-        grid-template-columns: 1.1fr 0.9fr;
-      }
-    }
-
-    .hero-content h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      line-height: 1.2;
-      color: #0f172a;
-      margin-bottom: 1.25rem;
-    }
-
-    .hero-content h1 span {
-      color: var(--primary, #2563eb);
-    }
-
-    .hero-content p {
-      font-size: 1.1rem;
-      color: #475569;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-
-    .features-list {
-      display: grid;
-      grid-template-columns: repeat(1, 1fr);
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    @media (min-width: 576px) {
-      .features-list {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #334155;
-    }
-
-    .feature-icon {
-      width: 32px;
-      height: 32px;
-      background: #eff6ff;
-      color: var(--primary, #2563eb);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    /* Cartão de Autenticação */
-    .auth-card {
-      background: #ffffff;
-      border: 1px solid var(--border-color, #e2e8f0);
-      border-radius: 16px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-    }
-
-    .auth-card h2 {
-      font-size: 1.5rem;
+    .role-name {
+      font-size: 0.8rem;
       font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 0.5rem;
     }
 
-    .auth-card p.subtitle {
-      font-size: 0.9rem;
-      color: #64748b;
-      margin-bottom: 1.75rem;
-    }
-
+    /* Formulário */
     .form-group {
-      margin-bottom: 1.25rem;
+      margin-bottom: 18px;
+      position: relative;
     }
 
     .form-group label {
       display: block;
       font-size: 0.85rem;
       font-weight: 600;
-      color: #334155;
-      margin-bottom: 0.5rem;
+      color: var(--text-main);
+      margin-bottom: 6px;
     }
 
-    .form-group input {
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-control {
       width: 100%;
-      padding: 0.85rem 1rem;
-      border: 1px solid #cbd5e1;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       font-size: 0.95rem;
       outline: none;
-      box-sizing: border-box;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color 0.2s ease;
     }
 
-    .form-group input:focus {
-      border-color: var(--primary, #2563eb);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    .form-control:focus {
+      border-color: var(--primary-color);
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-muted);
     }
 
     .form-options {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 24px;
       font-size: 0.85rem;
-      margin-bottom: 1.5rem;
     }
 
-    .form-options label {
+    .remember-me {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      color: #475569;
+      gap: 6px;
+      color: var(--text-muted);
       cursor: pointer;
     }
 
-    .forgot-link {
-      color: var(--primary, #2563eb);
+    .forgot-password {
+      color: var(--primary-color);
       text-decoration: none;
       font-weight: 600;
     }
 
-    .forgot-link:hover {
+    .forgot-password:hover {
       text-decoration: underline;
     }
 
-    .btn-submit {
+    .btn-login {
       width: 100%;
-      background: var(--primary, #2563eb);
+      background-color: var(--primary-color);
       color: #ffffff;
-      padding: 0.9rem;
+      padding: 12px;
       border: none;
       border-radius: 8px;
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background-color 0.2s ease;
     }
 
-    .btn-submit:hover {
-      background: var(--primary-dark, #1d4ed8);
+    .btn-login:hover {
+      background-color: var(--primary-hover);
     }
 
-    .alert-error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #dc2626;
-      padding: 0.75rem 1rem;
+    /* Alerta de Mensagens */
+    .alert-box {
+      padding: 10px 14px;
       border-radius: 8px;
       font-size: 0.85rem;
-      margin-bottom: 1.25rem;
+      margin-bottom: 18px;
       display: none;
     }
 
-    .quick-demo-info {
-      margin-top: 1.5rem;
-      padding-top: 1.25rem;
-      border-top: 1px solid #e2e8f0;
-      font-size: 0.8rem;
-      color: #64748b;
-      text-align: center;
-      line-height: 1.5;
+    .alert-danger {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
     }
 
-    .quick-demo-info code {
-      background: #f1f5f9;
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      color: #0f172a;
-      font-weight: 600;
+    .alert-success {
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
     }
 
-    footer.landing-footer {
-      background: #ffffff;
-      border-top: 1px solid #e2e8f0;
-      padding: 1.5rem;
+    /* Dica de Demonstração */
+    .demo-info {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border-color);
+      font-size: 0.78rem;
+      color: var(--text-muted);
       text-align: center;
-      font-size: 0.85rem;
-      color: #64748b;
     }
   </style>
 </head>
 <body>
 
-  <!-- Topo Institucional -->
-  <header class="landing-header">
-    <a href="index.html" class="brand">Goulart<span>Educa</span></a>
-    <a href="contato.html" style="font-size: 0.9rem; font-weight: 600; color: var(--primary, #2563eb); text-decoration: none;">Apoio / Contacto</a>
-  </header>
+  <main class="login-container">
+    <header class="brand-header">
+      <div class="brand-logo">Plataforma Edu</div>
+      <p class="brand-subtitle">Acesse sua conta para continuar</p>
+    </header>
 
-  <!-- Conteúdo Principal -->
-  <main class="hero-container">
-    
-    <!-- Apresentação do Portal -->
-    <section class="hero-content">
-      <h1>Bem-vindo ao Portal do Aluno <span>Goulart Educa</span></h1>
-      <p>Aceda centralizadamente ao seu desempenho académico, boletim, horários das aulas, gabaritos e comunicados da instituição.</p>
+    <!-- Caixa de Feedback/Erros -->
+    <div id="alert-message" class="alert-box"></div>
 
-      <div class="features-list">
-        <div class="feature-item">
-          <div class="feature-icon">✓</div>
-          <span>Boletim de Notas em Tempo Real</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">✓</div>
-          <span>Grade de Horários Atualizada</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">✓</div>
-          <span>Gabaritos e Provas Bimestrais</span>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">✓</div>
-          <span>Avisos e Calendário Académico</span>
-        </div>
-      </div>
-    </section>
+    <!-- Seleção de Tipo de Login -->
+    <span class="role-selection-label">Selecione o seu perfil de acesso:</span>
+    <div class="role-grid">
+      <button type="button" class="role-btn active" data-role="aluno">
+        <span class="role-icon">👨‍🎓</span>
+        <span class="role-name">Aluno</span>
+      </button>
+
+      <button type="button" class="role-btn" data-role="professor">
+        <span class="role-icon">👨‍🏫</span>
+        <span class="role-name">Professor</span>
+      </button>
+
+      <button type="button" class="role-btn" data-role="gestor">
+        <span class="role-icon">🏛️</span>
+        <span class="role-name">Gestor</span>
+      </button>
+    </div>
 
     <!-- Formulário de Login -->
-    <section class="auth-card">
-      <h2>Iniciar Sessão</h2>
-      <p class="subtitle">Insira as suas credenciais para aceder ao portal</p>
-
-      <div id="loginAlert" class="alert-error">
-        Utilizador ou palavra-passe incorretos. Tente novamente.
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">E-mail corporativo / institucional</label>
+        <div class="input-wrapper">
+          <input 
+            type="email" 
+            id="email" 
+            class="form-control" 
+            placeholder="nome@escola.edu.br" 
+            required 
+            autocomplete="email"
+          >
+        </div>
       </div>
 
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="email">E-mail ou Matrícula</label>
-          <input type="text" id="email" placeholder="ex: aluno@goulart.edu" required autocomplete="username">
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <div class="input-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            class="form-control" 
+            placeholder="••••••••" 
+            required 
+            autocomplete="current-password"
+          >
+          <button type="button" id="toggle-password-btn" class="toggle-password" aria-label="Mostrar ou ocultar senha">
+            👁️
+          </button>
         </div>
-
-        <div class="form-group">
-          <label for="password">Palavra-passe</label>
-          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-        </div>
-
-        <div class="form-options">
-          <label>
-            <input type="checkbox" id="rememberMe"> Lembrar-me
-          </label>
-          <a href="#" onclick="alert('Entre em contacto com a secretaria para redefinir a sua palavra-passe.')" class="forgot-link">Esqueceu a palavra-passe?</a>
-        </div>
-
-        <button type="submit" class="btn-submit">Entrar no Portal</button>
-      </form>
-
-      <div class="quick-demo-info">
-        💡 <strong>Acesso Rápido para Demonstração:</strong><br>
-        Clique em "Entrar" com qualquer e-mail/palavra-passe para aceder diretamente ao Hub Central.
       </div>
-    </section>
 
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" id="remember-me">
+          Lembrar-me neste dispositivo
+        </label>
+        <a href="#" id="forgot-password-link" class="forgot-password">Esqueceu a senha?</a>
+      </div>
+
+      <button type="submit" class="btn-login" id="submit-btn">Entrar na Plataforma</button>
+    </form>
+
+    <div class="demo-info">
+      💡 <strong>Acesso Rápido para Testes:</strong><br>
+      Pode utilizar qualquer e-mail válido (ex: <code>usuario@edu.com</code>) e senha com 6+ caracteres.
+    </div>
   </main>
 
-  <!-- Rodapé -->
-  <footer class="landing-footer">
-    <p>&copy; 2026 Colégio Goulart Educa. Todos os direitos reservados.</p>
-  </footer>
-
-  <script src="js/auth.js"></script>
-  <script>
-    // Se o utilizador já tiver uma sessão válida ativa, entra direto no Dashboard
-    document.addEventListener("DOMContentLoaded", function() {
-      if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
-        window.location.href = "dashboard.html";
-      }
-    });
-
-    function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const alertBox = document.getElementById('loginAlert');
-
-      if (!email || !password) {
-        alertBox.textContent = "Por favor, preencha todos os campos.";
-        alertBox.style.display = "block";
-        return;
-      }
-
-      // 1. Grava a sessão no LocalStorage de forma síncrona
-      if (typeof Auth !== 'undefined' && Auth.login) {
-        Auth.login(email, password);
-      } else {
-        localStorage.setItem("userLoggedIn", "true");
-        localStorage.setItem("userName", email.split('@')[0]);
-      }
-
-      // 2. Redireciona para o dashboard com a sessão garantida
-      window.location.href = "dashboard.html";
-    }
-  </script>
+  <script src="index.js"></script>
 </body>
 </html>
